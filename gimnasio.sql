@@ -1,0 +1,333 @@
+CREATE DATABASE  IF NOT EXISTS `gimnasio` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `gimnasio`;
+-- MySQL dump 10.13  Distrib 8.0.46, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: gimnasio
+-- ------------------------------------------------------
+-- Server version	8.0.45-0ubuntu0.24.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `cliente`
+--
+
+DROP TABLE IF EXISTS `cliente`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cliente` (
+  `id_cliente` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `fecha_alta` datetime DEFAULT NULL,
+  PRIMARY KEY (`id_cliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cliente`
+--
+
+LOCK TABLES `cliente` WRITE;
+/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
+INSERT INTO `cliente` VALUES (1,'Juan Pérez','juan@gmail.com','123456789','2026-04-28 12:25:41'),(2,'María López','maria@gmail.com','987654321','2026-04-28 12:25:41'),(3,'Pedro García','pedro@gmail.com','654123987','2026-04-28 12:25:41');
+/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cliente_rutina`
+--
+
+DROP TABLE IF EXISTS `cliente_rutina`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cliente_rutina` (
+  `id_cliente` int NOT NULL,
+  `id_rutina` int NOT NULL,
+  `fecha_inicio` date DEFAULT NULL,
+  `fecha_fin` date DEFAULT NULL,
+  `observaciones` text,
+  PRIMARY KEY (`id_cliente`,`id_rutina`),
+  KEY `id_rutina` (`id_rutina`),
+  CONSTRAINT `cliente_rutina_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE,
+  CONSTRAINT `cliente_rutina_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cliente_rutina`
+--
+
+LOCK TABLES `cliente_rutina` WRITE;
+/*!40000 ALTER TABLE `cliente_rutina` DISABLE KEYS */;
+INSERT INTO `cliente_rutina` VALUES (1,1,'2025-01-01',NULL,'Inicio'),(2,2,'2025-01-10',NULL,'Progreso'),(3,3,'2025-02-01',NULL,'Avanzado');
+/*!40000 ALTER TABLE `cliente_rutina` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dificultad`
+--
+
+DROP TABLE IF EXISTS `dificultad`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dificultad` (
+  `id_dificultad` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id_dificultad`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dificultad`
+--
+
+LOCK TABLES `dificultad` WRITE;
+/*!40000 ALTER TABLE `dificultad` DISABLE KEYS */;
+INSERT INTO `dificultad` VALUES (1,'Principiante'),(2,'Intermedio'),(3,'Avanzado');
+/*!40000 ALTER TABLE `dificultad` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ejercicio`
+--
+
+DROP TABLE IF EXISTS `ejercicio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ejercicio` (
+  `id_ejercicio` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `descripcion` text,
+  `video` varchar(255) DEFAULT NULL,
+  `id_grupo_muscular` int DEFAULT NULL,
+  PRIMARY KEY (`id_ejercicio`),
+  KEY `id_grupo_muscular` (`id_grupo_muscular`),
+  CONSTRAINT `ejercicio_ibfk_1` FOREIGN KEY (`id_grupo_muscular`) REFERENCES `grupo_muscular` (`id_grupo_muscular`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ejercicio`
+--
+
+LOCK TABLES `ejercicio` WRITE;
+/*!40000 ALTER TABLE `ejercicio` DISABLE KEYS */;
+INSERT INTO `ejercicio` VALUES (1,'Press banca','Ejercicio de pecho','video1.mp4',1),(2,'Dominadas','Ejercicio de espalda','video2.mp4',2),(3,'Sentadillas','Ejercicio de piernas','video3.mp4',3),(4,'Curl bíceps','Ejercicio de brazos','video4.mp4',4);
+/*!40000 ALTER TABLE `ejercicio` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `entrenador`
+--
+
+DROP TABLE IF EXISTS `entrenador`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entrenador` (
+  `id_entrenador` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id_entrenador`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `entrenador`
+--
+
+LOCK TABLES `entrenador` WRITE;
+/*!40000 ALTER TABLE `entrenador` DISABLE KEYS */;
+INSERT INTO `entrenador` VALUES (1,'Carlos'),(2,'Ana'),(3,'Luis');
+/*!40000 ALTER TABLE `entrenador` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `entrenador_especialidad`
+--
+
+DROP TABLE IF EXISTS `entrenador_especialidad`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `entrenador_especialidad` (
+  `id_entrenador` int NOT NULL,
+  `id_especialidad` int NOT NULL,
+  PRIMARY KEY (`id_entrenador`,`id_especialidad`),
+  KEY `id_especialidad` (`id_especialidad`),
+  CONSTRAINT `entrenador_especialidad_ibfk_1` FOREIGN KEY (`id_entrenador`) REFERENCES `entrenador` (`id_entrenador`) ON DELETE CASCADE,
+  CONSTRAINT `entrenador_especialidad_ibfk_2` FOREIGN KEY (`id_especialidad`) REFERENCES `especialidad` (`id_especialidad`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `entrenador_especialidad`
+--
+
+LOCK TABLES `entrenador_especialidad` WRITE;
+/*!40000 ALTER TABLE `entrenador_especialidad` DISABLE KEYS */;
+INSERT INTO `entrenador_especialidad` VALUES (1,1),(1,2),(2,2),(3,3);
+/*!40000 ALTER TABLE `entrenador_especialidad` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `especialidad`
+--
+
+DROP TABLE IF EXISTS `especialidad`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `especialidad` (
+  `id_especialidad` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `descripcion` text,
+  PRIMARY KEY (`id_especialidad`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `especialidad`
+--
+
+LOCK TABLES `especialidad` WRITE;
+/*!40000 ALTER TABLE `especialidad` DISABLE KEYS */;
+INSERT INTO `especialidad` VALUES (1,'Fuerza','Entrenamiento de fuerza y musculación'),(2,'Cardio','Resistencia cardiovascular'),(3,'Rehabilitación','Recuperación de lesiones');
+/*!40000 ALTER TABLE `especialidad` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `grupo_muscular`
+--
+
+DROP TABLE IF EXISTS `grupo_muscular`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `grupo_muscular` (
+  `id_grupo_muscular` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `descripcion` text,
+  PRIMARY KEY (`id_grupo_muscular`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `grupo_muscular`
+--
+
+LOCK TABLES `grupo_muscular` WRITE;
+/*!40000 ALTER TABLE `grupo_muscular` DISABLE KEYS */;
+INSERT INTO `grupo_muscular` VALUES (1,'Pecho','Músculos del pecho'),(2,'Espalda','Músculos dorsales'),(3,'Piernas','Músculos inferiores'),(4,'Brazos','Bíceps y tríceps');
+/*!40000 ALTER TABLE `grupo_muscular` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `progreso`
+--
+
+DROP TABLE IF EXISTS `progreso`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `progreso` (
+  `id_progreso` int NOT NULL AUTO_INCREMENT,
+  `id_cliente` int DEFAULT NULL,
+  `id_ejercicio` int DEFAULT NULL,
+  `peso_utilizado` double DEFAULT NULL,
+  `repeticiones` int DEFAULT NULL,
+  `fecha` date DEFAULT NULL,
+  PRIMARY KEY (`id_progreso`),
+  KEY `id_cliente` (`id_cliente`),
+  KEY `id_ejercicio` (`id_ejercicio`),
+  CONSTRAINT `progreso_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`) ON DELETE CASCADE,
+  CONSTRAINT `progreso_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `ejercicio` (`id_ejercicio`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `progreso`
+--
+
+LOCK TABLES `progreso` WRITE;
+/*!40000 ALTER TABLE `progreso` DISABLE KEYS */;
+INSERT INTO `progreso` VALUES (1,1,1,25,10,'2025-02-01'),(2,1,1,30,8,'2025-02-10'),(3,2,2,0,12,'2025-02-05'),(4,3,3,90,5,'2025-02-12');
+/*!40000 ALTER TABLE `progreso` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rutina`
+--
+
+DROP TABLE IF EXISTS `rutina`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rutina` (
+  `id_rutina` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) DEFAULT NULL,
+  `descripcion` text,
+  `id_dificultad` int DEFAULT NULL,
+  PRIMARY KEY (`id_rutina`),
+  KEY `id_dificultad` (`id_dificultad`),
+  CONSTRAINT `rutina_ibfk_1` FOREIGN KEY (`id_dificultad`) REFERENCES `dificultad` (`id_dificultad`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rutina`
+--
+
+LOCK TABLES `rutina` WRITE;
+/*!40000 ALTER TABLE `rutina` DISABLE KEYS */;
+INSERT INTO `rutina` VALUES (1,'Rutina básica','Inicio en el gimnasio',1),(2,'Rutina intermedia','Mejora física general',2),(3,'Rutina avanzada','Alta intensidad',3);
+/*!40000 ALTER TABLE `rutina` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rutina_ejercicio`
+--
+
+DROP TABLE IF EXISTS `rutina_ejercicio`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rutina_ejercicio` (
+  `id_rutina` int NOT NULL,
+  `id_ejercicio` int NOT NULL,
+  `series` int DEFAULT NULL,
+  `repeticiones` int DEFAULT NULL,
+  `peso_recomendado` double DEFAULT NULL,
+  `tiempo_ejecucion` time DEFAULT NULL,
+  `tiempo_descanso` time DEFAULT NULL,
+  `orden` int DEFAULT NULL,
+  PRIMARY KEY (`id_rutina`,`id_ejercicio`),
+  KEY `id_ejercicio` (`id_ejercicio`),
+  CONSTRAINT `rutina_ejercicio_ibfk_1` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE,
+  CONSTRAINT `rutina_ejercicio_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `ejercicio` (`id_ejercicio`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rutina_ejercicio`
+--
+
+LOCK TABLES `rutina_ejercicio` WRITE;
+/*!40000 ALTER TABLE `rutina_ejercicio` DISABLE KEYS */;
+INSERT INTO `rutina_ejercicio` VALUES (1,1,3,10,20,'00:01:00','00:00:30',1),(1,4,3,12,10,'00:01:00','00:00:30',2),(2,1,4,8,40,'00:01:30','00:00:45',1),(2,2,4,8,0,'00:01:30','00:00:45',2),(3,3,5,6,80,'00:02:00','00:01:00',1);
+/*!40000 ALTER TABLE `rutina_ejercicio` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2026-04-28 13:12:44
