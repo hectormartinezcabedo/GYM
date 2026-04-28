@@ -1,53 +1,56 @@
 package com.hibernate.model;
 
-import javax.persistence.*;
-import java.util.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "grupo_muscular")
 public class GrupoMuscular {
+	
+	    @Id
+	    @GeneratedValue(strategy=GenerationType.AUTO)
+	    @Column(name="id_grupo_muscular")
+	    private int id_grupo_muscular;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idGrupoMuscular;
+	    @Column(name="nombre")
+	    private String nombre;
+	    
+	    @Column(name="descripcion")
+	    private String descripcion;
+	    
+	    public GrupoMuscular(String nombre, String descripcion) {
+	    	this.nombre = nombre;
+	    	this.descripcion = descripcion;
+	    }
 
-    private String nombre;
-    private String descripcion;
+		public int getId_grupo_muscular() {
+			return id_grupo_muscular;
+		}
 
-    @OneToMany(mappedBy = "grupoMuscular")
-    private List<Ejercicio> ejercicios = new ArrayList<>();
+		public void setId_grupo_muscular(int id_grupo_muscular) {
+			this.id_grupo_muscular = id_grupo_muscular;
+		}
 
-	public int getIdGrupoMuscular() {
-		return idGrupoMuscular;
-	}
+		public String getNombre() {
+			return nombre;
+		}
 
-	public void setIdGrupoMuscular(int idGrupoMuscular) {
-		this.idGrupoMuscular = idGrupoMuscular;
-	}
+		public void setNombre(String nombre) {
+			this.nombre = nombre;
+		}
 
-	public String getNombre() {
-		return nombre;
-	}
+		public String getDescripcion() {
+			return descripcion;
+		}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+		public void setDescripcion(String descripcion) {
+			this.descripcion = descripcion;
+		}
+	    
+	    
 
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
-
-	public List<Ejercicio> getEjercicios() {
-		return ejercicios;
-	}
-
-	public void setEjercicios(List<Ejercicio> ejercicios) {
-		this.ejercicios = ejercicios;
-	}
-
-    
 }

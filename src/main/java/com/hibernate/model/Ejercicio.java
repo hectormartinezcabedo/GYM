@@ -1,29 +1,45 @@
 package com.hibernate.model;
 
-import javax.persistence.*;
 import java.util.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ejercicio")
 public class Ejercicio {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="idEjercicio")
     private int idEjercicio;
 
+    @Column(name="nombre")
     private String nombre;
+    
+    @Column(name="descripcion")
     private String descripcion;
+    
+    @Column(name="video")
     private String video;
 
     @ManyToOne
     @JoinColumn(name = "id_grupo_muscular")
-    private GrupoMuscular grupoMuscular;
+    private GrupoMuscular id_grupo_muscular;
+    
+    public Ejercicio(String nombre, String descripcion, String video, GrupoMuscular id_grupo_muscular) {
+    	this.nombre = nombre;
+    	this.descripcion = descripcion;
+    	this.video = video;
+    	this.id_grupo_muscular = id_grupo_muscular;
+    }
 
-    @OneToMany(mappedBy = "ejercicio")
-    private List<RutinaEjercicio> rutinas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "ejercicio")
-    private List<Progreso> progresos = new ArrayList<>();
 
 	public int getIdEjercicio() {
 		return idEjercicio;
@@ -58,28 +74,14 @@ public class Ejercicio {
 	}
 
 	public GrupoMuscular getGrupoMuscular() {
-		return grupoMuscular;
+		return id_grupo_muscular;
 	}
 
 	public void setGrupoMuscular(GrupoMuscular grupoMuscular) {
-		this.grupoMuscular = grupoMuscular;
+		this.id_grupo_muscular = grupoMuscular;
 	}
 
-	public List<RutinaEjercicio> getRutinas() {
-		return rutinas;
-	}
-
-	public void setRutinas(List<RutinaEjercicio> rutinas) {
-		this.rutinas = rutinas;
-	}
-
-	public List<Progreso> getProgresos() {
-		return progresos;
-	}
-
-	public void setProgresos(List<Progreso> progresos) {
-		this.progresos = progresos;
-	}
+	
 
     
 }

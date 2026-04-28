@@ -1,43 +1,41 @@
 package com.hibernate.model;
 
-import javax.persistence.*;
+import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import java.util.*;
 
 @Entity
 @Table(name = "cliente")
 public class Cliente {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="idCliente")
     private int idCliente;
 
+    @Column(name="nombre")
     private String nombre;
+    
+    @Column(name="email")
     private String email;
-    private String telefono;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaAlta;
-
-    @ManyToMany
-    @JoinTable(
-        name = "cliente_rutina",
-        joinColumns = @JoinColumn(name = "id_cliente"),
-        inverseJoinColumns = @JoinColumn(name = "id_rutina")
-    )
-    private List<Rutina> rutinas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cliente")
-    private List<Progreso> progresos = new ArrayList<>();
+    
+    @Column(name="telefono")
+    private int telefono;
+    
+    @Column(name="fecha_alta")
+    private LocalDate fecha_alta;
+    
+    public Cliente(String nombre, String email, int telefono, LocalDate fecha_alta) {
+    	this.nombre = nombre;
+    	this.email = email;
+    	this.telefono = telefono;
+    	this.fecha_alta = fecha_alta;
+    }
 
 	public int getIdCliente() {
 		return idCliente;
@@ -63,37 +61,21 @@ public class Cliente {
 		this.email = email;
 	}
 
-	public String getTelefono() {
+	public int getTelefono() {
 		return telefono;
 	}
 
-	public void setTelefono(String telefono) {
+	public void setTelefono(int telefono) {
 		this.telefono = telefono;
 	}
 
-	public Date getFechaAlta() {
-		return fechaAlta;
+	public LocalDate getFecha_alta() {
+		return fecha_alta;
 	}
 
-	public void setFechaAlta(Date fechaAlta) {
-		this.fechaAlta = fechaAlta;
+	public void setFecha_alta(LocalDate fecha_alta) {
+		this.fecha_alta = fecha_alta;
 	}
-
-	public List<Rutina> getRutinas() {
-		return rutinas;
-	}
-
-	public void setRutinas(List<Rutina> rutinas) {
-		this.rutinas = rutinas;
-	}
-
-	public List<Progreso> getProgresos() {
-		return progresos;
-	}
-
-	public void setProgresos(List<Progreso> progresos) {
-		this.progresos = progresos;
-	}
-
+    
     
 }

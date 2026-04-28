@@ -1,6 +1,12 @@
 package com.hibernate.model;
 
-import javax.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.util.*;
 
 @Entity
@@ -8,18 +14,16 @@ import java.util.*;
 public class Entrenador {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="idEntrenador")
     private int idEntrenador;
 
+    @Column(name="nombre")
     private String nombre;
 
-    @ManyToMany
-    @JoinTable(
-        name = "entrenador_especialidad",
-        joinColumns = @JoinColumn(name = "id_entrenador"),
-        inverseJoinColumns = @JoinColumn(name = "id_especialidad")
-    )
-    private List<Especialidad> especialidades = new ArrayList<>();
+    public Entrenador(String nombre) {
+    	this.nombre = nombre;
+    }
 
 	public int getIdEntrenador() {
 		return idEntrenador;
@@ -37,13 +41,7 @@ public class Entrenador {
 		this.nombre = nombre;
 	}
 
-	public List<Especialidad> getEspecialidades() {
-		return especialidades;
-	}
-
-	public void setEspecialidades(List<Especialidad> especialidades) {
-		this.especialidades = especialidades;
-	}
+	
 
     
 }
