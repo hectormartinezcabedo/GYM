@@ -35,7 +35,7 @@ public class HibernateUtil {
 				settings.put(Environment.HBM2DDL_AUTO, "update");
 				configuration.setProperties(settings);
 				configuration.addAnnotatedClass(Cliente.class);
-				configuration.addAnnotatedClass(Ejercicio.class);
+				//configuration.addAnnotatedClass(Ejercicio.class);
 				configuration.addAnnotatedClass(GrupoMuscular.class);
 				configuration.addAnnotatedClass(Entrenador.class);
 				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()

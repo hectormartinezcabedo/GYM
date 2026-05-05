@@ -33,6 +33,10 @@ public class Ejercicio {
     @JoinColumn(name = "id_grupo_muscular")
     private GrupoMuscular id_grupo_muscular;
     
+    public Ejercicio() {
+        
+    }
+    
     public Ejercicio(String nombre, String descripcion, String video, GrupoMuscular id_grupo_muscular) {
     	this.nombre = nombre;
     	this.descripcion = descripcion;

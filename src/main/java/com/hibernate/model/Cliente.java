@@ -28,9 +28,14 @@ public class Cliente {
     private int telefono;
     
     @Column(name="fecha_alta")
-    private LocalDate fecha_alta;
+    private String fecha_alta;
     
-    public Cliente(String nombre, String email, int telefono, LocalDate fecha_alta) {
+    public Cliente() {
+    
+    }
+
+    
+    public Cliente(String nombre, String email, int telefono, String fecha_alta) {
     	this.nombre = nombre;
     	this.email = email;
     	this.telefono = telefono;
@@ -69,11 +74,11 @@ public class Cliente {
 		this.telefono = telefono;
 	}
 
-	public LocalDate getFecha_alta() {
+	public String getFecha_alta() {
 		return fecha_alta;
 	}
 
-	public void setFecha_alta(LocalDate fecha_alta) {
+	public void setFecha_alta(String fecha_alta) {
 		this.fecha_alta = fecha_alta;
 	}
     

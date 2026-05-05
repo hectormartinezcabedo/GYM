@@ -20,6 +20,10 @@ public class Entrenador {
 
     @Column(name="nombre")
     private String nombre;
+    
+    public Entrenador() {
+    	
+    }
 
     public Entrenador(String nombre) {
     	this.nombre = nombre;

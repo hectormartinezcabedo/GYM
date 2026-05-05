@@ -66,13 +66,12 @@ public class ClienteDAO  {
 		return c;
 	}
 
-	public List<Cliente> selectAllPacientes() {
+	public List<Cliente> selectAllClientes() {
 		Transaction transaction = null;
 		List<Cliente> clientes = null;
-		Cliente c = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
-			clientes = session.createQuery("from Cliente", Cliente.class).getResultList();
+			clientes = session.createQuery("FROM Cliente", Cliente.class).getResultList();
 			transaction.commit();
 		} catch (Exception e) {
 			if (transaction != null) {

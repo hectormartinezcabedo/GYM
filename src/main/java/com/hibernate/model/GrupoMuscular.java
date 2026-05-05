@@ -22,6 +22,10 @@ public class GrupoMuscular {
 	    @Column(name="descripcion")
 	    private String descripcion;
 	    
+	    public GrupoMuscular() {
+	    	
+	    }
+	    
 	    public GrupoMuscular(String nombre, String descripcion) {
 	    	this.nombre = nombre;
 	    	this.descripcion = descripcion;
