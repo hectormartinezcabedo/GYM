@@ -1,6 +1,7 @@
 package com.hibernate.main;
 
 import java.awt.EventQueue;
+import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -17,6 +18,7 @@ import com.hibernate.dao.EntrenadorDAO;
 import com.hibernate.model.Cliente;
 import com.hibernate.model.Entrenador;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,8 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
-import javax.swing.JPasswordField;
+
 import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.UIManager;
+import java.awt.Color;
 
 public class GestionGimnasio {
 	
@@ -61,6 +66,12 @@ public class GestionGimnasio {
 				modelEntrenador.addRow(row);
 			}
 		
+	}
+	
+	public ImageIcon cargarIcono(String ruta) {
+	    ImageIcon icon = new ImageIcon(ruta);
+	    Image img = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+	    return new ImageIcon(img);
 	}
 
 	private JFrame frame;
@@ -95,6 +106,7 @@ public class GestionGimnasio {
 				}
 			}
 		});
+		
 	}
 
 	/**
@@ -115,25 +127,17 @@ public class GestionGimnasio {
 		ClienteDAO daoCliente = new ClienteDAO();
 		EntrenadorDAO daoEntrenador = new EntrenadorDAO();
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(499, 275, 428, 291);
-		tabbedPane.setBorder(new CompoundBorder());
+		JTabbedPane tabbedPaneGYM = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPaneGYM.setBounds(34, 12, 862, 542);
+		tabbedPaneGYM.setBorder(new CompoundBorder());
 		
 		JPanel panelAdmin = new JPanel();
-		tabbedPane.addTab("Admin", null, panelAdmin, null);
+		tabbedPaneGYM.addTab("Admin", cargarIcono("img/9977156.png"), panelAdmin);
 		panelAdmin.setLayout(null);
 		
 		JTabbedPane tabbedPane_2 = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane_2.setBounds(0, 0, 922, 537);
 		panelAdmin.add(tabbedPane_2);
-		
-		JPanel panelGestionClientes = new JPanel();
-		tabbedPane_2.addTab("Gestión Clientes", null, panelGestionClientes, null);
-		panelGestionClientes.setLayout(null);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 49, 278, 143);
-		panelGestionClientes.add(scrollPane);
 		
 		DefaultTableModel modelAdminCliente = new DefaultTableModel();
 		modelAdminCliente.addColumn("ID Cliente");
@@ -167,36 +171,45 @@ public class GestionGimnasio {
 					modelEntrenador.addRow(row);
 				}
 		
+		JPanel panelGestionClientes = new JPanel();
+		tabbedPane_2.addTab("Gestión Clientes", cargarIcono("img/18272841.png"), panelGestionClientes);
+		panelGestionClientes.setLayout(null);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(242, 24, 384, 192);
+		panelGestionClientes.add(scrollPane);
+		
 		tableAdminCliente = new JTable(modelAdminCliente);
 		scrollPane.setViewportView(tableAdminCliente);
 		
 		textField_ID = new JTextField();
 		textField_ID.setEditable(false);
-		textField_ID.setBounds(127, 224, 114, 21);
+		textField_ID.setBounds(420, 239, 114, 21);
 		panelGestionClientes.add(textField_ID);
 		textField_ID.setColumns(10);
 		
 		textField_Nombre = new JTextField();
-		textField_Nombre.setBounds(127, 257, 114, 21);
+		textField_Nombre.setBounds(420, 272, 114, 21);
 		panelGestionClientes.add(textField_Nombre);
 		textField_Nombre.setColumns(10);
 		
 		textField_Email = new JTextField();
 		textField_Email.setColumns(10);
-		textField_Email.setBounds(127, 290, 114, 21);
+		textField_Email.setBounds(420, 305, 114, 21);
 		panelGestionClientes.add(textField_Email);
 		
 		textField_Telefono = new JTextField();
 		textField_Telefono.setColumns(10);
-		textField_Telefono.setBounds(127, 323, 114, 21);
+		textField_Telefono.setBounds(420, 338, 114, 21);
 		panelGestionClientes.add(textField_Telefono);
 		
 		textField_Fecha_Alta = new JTextField();
 		textField_Fecha_Alta.setColumns(10);
-		textField_Fecha_Alta.setBounds(127, 356, 114, 21);
+		textField_Fecha_Alta.setBounds(420, 371, 114, 21);
 		panelGestionClientes.add(textField_Fecha_Alta);
 		
 		JButton btnInsertar_1 = new JButton("Insertar");
+		btnInsertar_1.setBackground(new Color(102, 205, 170));
 		btnInsertar_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int telefono= Integer.parseInt(textField_Telefono.getText());
@@ -207,10 +220,11 @@ public class GestionGimnasio {
 				JOptionPane.showMessageDialog(null, "Cliente añadido correctamente");
 			}
 		});
-		btnInsertar_1.setBounds(12, 408, 82, 27);
+		btnInsertar_1.setBounds(242, 432, 82, 27);
 		panelGestionClientes.add(btnInsertar_1);
 		
 		JButton btnActualizar = new JButton("Actualizar");
+		btnActualizar.setBackground(new Color(70, 130, 180));
 		btnActualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int telefono = Integer.parseInt(textField_Telefono.getText());
@@ -227,10 +241,11 @@ public class GestionGimnasio {
 				cargarTablaCliente(modelAdminCliente);
 			}
 		});
-		btnActualizar.setBounds(106, 408, 94, 27);
+		btnActualizar.setBounds(396, 432, 94, 27);
 		panelGestionClientes.add(btnActualizar);
 		
 		JButton btnBorrar = new JButton("Borrar");
+		btnBorrar.setBackground(new Color(147, 112, 219));
 		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				daoCliente.deleteCliente(Integer.parseInt(textField_ID.getText()));
@@ -239,31 +254,45 @@ public class GestionGimnasio {
 				cargarTablaCliente(modelAdminCliente);
 			}
 		});
-		btnBorrar.setBounds(219, 408, 71, 27);
+		btnBorrar.setBounds(555, 432, 71, 27);
 		panelGestionClientes.add(btnBorrar);
 		
 		JLabel lblId = new JLabel("ID:");
-		lblId.setBounds(34, 226, 60, 17);
+		lblId.setBounds(327, 241, 60, 17);
 		panelGestionClientes.add(lblId);
 		
 		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setBounds(34, 259, 60, 17);
+		lblNombre.setBounds(327, 274, 60, 17);
 		panelGestionClientes.add(lblNombre);
 		
 		JLabel lblEmail = new JLabel("Email:");
-		lblEmail.setBounds(34, 292, 60, 17);
+		lblEmail.setBounds(327, 307, 60, 17);
 		panelGestionClientes.add(lblEmail);
 		
 		JLabel lblTelfono = new JLabel("Teléfono:");
-		lblTelfono.setBounds(34, 325, 60, 17);
+		lblTelfono.setBounds(327, 340, 60, 17);
 		panelGestionClientes.add(lblTelfono);
 		
 		JLabel lblFechaAlta = new JLabel("Fecha Alta:");
-		lblFechaAlta.setBounds(34, 358, 75, 17);
+		lblFechaAlta.setBounds(327, 373, 75, 17);
 		panelGestionClientes.add(lblFechaAlta);
 		
+		tableAdminCliente.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+				int index = tableAdminCliente.getSelectedRow();
+				TableModel modelAdminCliente = tableCliente.getModel();
+				textField_ID.setText(modelAdminCliente.getValueAt(index, 0).toString());
+				textField_Nombre.setText(modelAdminCliente.getValueAt(index, 1).toString());
+				textField_Email.setText(modelAdminCliente.getValueAt(index, 2).toString());
+				textField_Telefono.setText(modelAdminCliente.getValueAt(index, 3).toString());
+				textField_Fecha_Alta.setText(modelAdminCliente.getValueAt(index, 4).toString());
+			}
+		});
+		
 		JPanel panelGestiónEntrenadores = new JPanel();
-		tabbedPane_2.addTab("Gestión Entrenadores", null, panelGestiónEntrenadores, null);
+		tabbedPane_2.addTab("Gestión Entrenadores", cargarIcono("img/939255.png"), panelGestiónEntrenadores);
 		panelGestiónEntrenadores.setLayout(null);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
@@ -273,7 +302,8 @@ public class GestionGimnasio {
 		tableAdminEntrenadores = new JTable();
 		scrollPane_1.setViewportView(tableAdminEntrenadores);
 		JPanel panelCliente = new JPanel();
-		tabbedPane.addTab("Cliente", panelCliente);
+		tabbedPaneGYM.addTab("Clientes", cargarIcono("img/18272841.png"), panelCliente);
+		
 		panelCliente.setLayout(null);
 		
 		DefaultTableModel modelCliente = new DefaultTableModel();
@@ -304,7 +334,7 @@ public class GestionGimnasio {
 		panelPerfil.setLayout(null);
 		
 		JScrollPane scrollPaneCliente = new JScrollPane();
-		scrollPaneCliente.setBounds(37, 43, 257, 181);
+		scrollPaneCliente.setBounds(265, 42, 317, 217);
 		panelPerfil.add(scrollPaneCliente);
 		tableCliente = new JTable(modelCliente);
 		scrollPaneCliente.setViewportView(tableCliente);
@@ -323,52 +353,58 @@ public class GestionGimnasio {
 			}
 		});
 		
-		tableAdminCliente.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				int index = tableAdminCliente.getSelectedRow();
-				TableModel modelAdminCliente = tableCliente.getModel();
-				textField_ID.setText(modelAdminCliente.getValueAt(index, 0).toString());
-				textField_Nombre.setText(modelAdminCliente.getValueAt(index, 1).toString());
-				textField_Email.setText(modelAdminCliente.getValueAt(index, 2).toString());
-				textField_Telefono.setText(modelAdminCliente.getValueAt(index, 3).toString());
-				textField_Fecha_Alta.setText(modelAdminCliente.getValueAt(index, 4).toString());
-			}
-		});
-		
 		textFieldNombre = new JTextField();
-		textFieldNombre.setBounds(94, 397, 114, 21);
+		textFieldNombre.setBounds(413, 418, 114, 21);
 		panelPerfil.add(textFieldNombre);
 		textFieldNombre.setColumns(10);
 		
 		textFieldEmail = new JTextField();
-		textFieldEmail.setBounds(91, 368, 114, 21);
+		textFieldEmail.setBounds(413, 385, 114, 21);
 		panelPerfil.add(textFieldEmail);
 		textFieldEmail.setColumns(10);
 		
 		textFieldTelefono = new JTextField();
-		textFieldTelefono.setBounds(89, 342, 114, 21);
+		textFieldTelefono.setBounds(413, 352, 114, 21);
 		panelPerfil.add(textFieldTelefono);
 		textFieldTelefono.setColumns(10);
 		
 		textFieldFechaAlta = new JTextField();
-		textFieldFechaAlta.setBounds(90, 313, 114, 21);
+		textFieldFechaAlta.setBounds(413, 319, 114, 21);
 		panelPerfil.add(textFieldFechaAlta);
 		textFieldFechaAlta.setColumns(10);
 		
 		textFieldID = new JTextField();
-		textFieldID.setBounds(89, 267, 114, 21);
+		textFieldID.setBounds(413, 286, 114, 21);
 		panelPerfil.add(textFieldID);
 		textFieldID.setEditable(false);
 		textFieldID.setColumns(10);
 		
-		JPanel panelEjercicios = new JPanel();
-		tabbedPane_1.addTab("Ejercicios", null, panelEjercicios, null);
-		frame.getContentPane().add(tabbedPane);
+		JLabel lblId_1 = new JLabel("ID:");
+		lblId_1.setBounds(330, 290, 60, 17);
+		panelPerfil.add(lblId_1);
+		
+		JLabel lblNombre_1 = new JLabel("Nombre:");
+		lblNombre_1.setBounds(330, 323, 60, 17);
+		panelPerfil.add(lblNombre_1);
+		
+		JLabel lblEmail_1 = new JLabel("Email:");
+		lblEmail_1.setBounds(330, 356, 60, 17);
+		panelPerfil.add(lblEmail_1);
+		
+		JLabel lblTelfono_1 = new JLabel("Teléfono:");
+		lblTelfono_1.setBounds(330, 389, 60, 17);
+		panelPerfil.add(lblTelfono_1);
+		
+		JLabel lblFechaAlta_1 = new JLabel("Fecha Alta:");
+		lblFechaAlta_1.setBounds(330, 422, 75, 17);
+		panelPerfil.add(lblFechaAlta_1);
+		
+		JPanel panelRutinas = new JPanel();
+		tabbedPane_1.addTab("Rutinas", null, panelRutinas, null);
+		frame.getContentPane().add(tabbedPaneGYM);
 		
 		JPanel panelEntrenador = new JPanel();
-		tabbedPane.addTab("Entrenador", null, panelEntrenador, null);
+		tabbedPaneGYM.addTab("Entrenador", cargarIcono("img/939255.png"), panelEntrenador);
 		panelEntrenador.setLayout(null);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
@@ -378,7 +414,35 @@ public class GestionGimnasio {
 		tableEntrenador = new JTable(modelEntrenador);
 		scrollPane_2.setViewportView(tableEntrenador);
 		
+		JTabbedPane tabbedPaneLogin = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPaneLogin.setBounds(172, 42, 511, 475);
+		frame.getContentPane().add(tabbedPaneLogin);
+		
+		JPanel panelLogin = new JPanel();
+		tabbedPaneLogin.addTab("Iniciar Sesión", null, panelLogin, null);
+		panelLogin.setLayout(null);
+		
 		JButton btnIniciarSesion = new JButton("Iniciar Sesion");
+		btnIniciarSesion.setBounds(194, 271, 115, 27);
+		panelLogin.add(btnIniciarSesion);
+		
+		textFieldUsuario = new JTextField();
+		textFieldUsuario.setBounds(194, 165, 114, 21);
+		panelLogin.add(textFieldUsuario);
+		textFieldUsuario.setColumns(10);
+		
+		textFieldContraseña = new JTextField();
+		textFieldContraseña.setBounds(194, 222, 114, 21);
+		panelLogin.add(textFieldContraseña);
+		textFieldContraseña.setColumns(10);
+		
+		JLabel lblUsuario = new JLabel("Usuario:");
+		lblUsuario.setBounds(125, 167, 60, 17);
+		panelLogin.add(lblUsuario);
+		
+		JLabel lblContrasea = new JLabel("Contraseña:");
+		lblContrasea.setBounds(104, 224, 72, 17);
+		panelLogin.add(lblContrasea);
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -401,26 +465,18 @@ public class GestionGimnasio {
 				}
 			}
 		});
-		btnIniciarSesion.setBounds(118, 110, 115, 27);
-		frame.getContentPane().add(btnIniciarSesion);
+		
+		JPanel panelRegister = new JPanel();
+		tabbedPaneLogin.addTab("Registrarse", null, panelRegister, null);
+		panelRegister.setLayout(null);
 		
 		JButton btnRegistrarse = new JButton("Registrarse");
+		btnRegistrarse.setBounds(183, 352, 102, 27);
+		panelRegister.add(btnRegistrarse);
 		btnRegistrarse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String hash = BCrypt.hashpw(textFieldContraseña.getText(), BCrypt.gensalt());
 			}
 		});
-		btnRegistrarse.setBounds(118, 162, 115, 27);
-		frame.getContentPane().add(btnRegistrarse);
-		
-		textFieldUsuario = new JTextField();
-		textFieldUsuario.setBounds(118, 240, 114, 21);
-		frame.getContentPane().add(textFieldUsuario);
-		textFieldUsuario.setColumns(10);
-		
-		textFieldContraseña = new JTextField();
-		textFieldContraseña.setBounds(118, 288, 114, 21);
-		frame.getContentPane().add(textFieldContraseña);
-		textFieldContraseña.setColumns(10);
 	}
 }
