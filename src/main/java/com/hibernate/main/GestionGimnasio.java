@@ -91,6 +91,11 @@ public class GestionGimnasio {
 	private JTable tableAdminEntrenadores;
 	private JTextField textFieldUsuario;
 	private JTextField textFieldContraseña;
+	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textFieldIDentrenador;
+	private JTextField textFieldEspecialidad;
+	private JTextField textFieldNOMentrenador;
 
 	/**
 	 * Launch the application.
@@ -159,8 +164,9 @@ public class GestionGimnasio {
 			}
 			
 			DefaultTableModel modelEntrenador = new DefaultTableModel();
-			modelEntrenador.addColumn("ID Cliente");
+			modelEntrenador.addColumn("ID Entrenador");
 			modelEntrenador.addColumn("Nombre");
+			modelEntrenador.addColumn("Especialidad");
 			
 			List<Entrenador> listEntrenadores = new ArrayList();
 			listEntrenadores = daoEntrenador.selectAllEntrenadores();
@@ -176,7 +182,7 @@ public class GestionGimnasio {
 		panelGestionClientes.setLayout(null);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(242, 24, 384, 192);
+		scrollPane.setBounds(242, 65, 384, 192);
 		panelGestionClientes.add(scrollPane);
 		
 		tableAdminCliente = new JTable(modelAdminCliente);
@@ -184,28 +190,28 @@ public class GestionGimnasio {
 		
 		textField_ID = new JTextField();
 		textField_ID.setEditable(false);
-		textField_ID.setBounds(420, 239, 114, 21);
+		textField_ID.setBounds(421, 269, 114, 21);
 		panelGestionClientes.add(textField_ID);
 		textField_ID.setColumns(10);
 		
 		textField_Nombre = new JTextField();
-		textField_Nombre.setBounds(420, 272, 114, 21);
+		textField_Nombre.setBounds(421, 302, 114, 21);
 		panelGestionClientes.add(textField_Nombre);
 		textField_Nombre.setColumns(10);
 		
 		textField_Email = new JTextField();
 		textField_Email.setColumns(10);
-		textField_Email.setBounds(420, 305, 114, 21);
+		textField_Email.setBounds(421, 335, 114, 21);
 		panelGestionClientes.add(textField_Email);
 		
 		textField_Telefono = new JTextField();
 		textField_Telefono.setColumns(10);
-		textField_Telefono.setBounds(420, 338, 114, 21);
+		textField_Telefono.setBounds(421, 368, 114, 21);
 		panelGestionClientes.add(textField_Telefono);
 		
 		textField_Fecha_Alta = new JTextField();
 		textField_Fecha_Alta.setColumns(10);
-		textField_Fecha_Alta.setBounds(420, 371, 114, 21);
+		textField_Fecha_Alta.setBounds(421, 401, 114, 21);
 		panelGestionClientes.add(textField_Fecha_Alta);
 		
 		JButton btnInsertar_1 = new JButton("Insertar");
@@ -220,7 +226,7 @@ public class GestionGimnasio {
 				JOptionPane.showMessageDialog(null, "Cliente añadido correctamente");
 			}
 		});
-		btnInsertar_1.setBounds(242, 432, 82, 27);
+		btnInsertar_1.setBounds(242, 439, 82, 27);
 		panelGestionClientes.add(btnInsertar_1);
 		
 		JButton btnActualizar = new JButton("Actualizar");
@@ -241,7 +247,7 @@ public class GestionGimnasio {
 				cargarTablaCliente(modelAdminCliente);
 			}
 		});
-		btnActualizar.setBounds(396, 432, 94, 27);
+		btnActualizar.setBounds(396, 439, 94, 27);
 		panelGestionClientes.add(btnActualizar);
 		
 		JButton btnBorrar = new JButton("Borrar");
@@ -254,28 +260,41 @@ public class GestionGimnasio {
 				cargarTablaCliente(modelAdminCliente);
 			}
 		});
-		btnBorrar.setBounds(555, 432, 71, 27);
+		btnBorrar.setBounds(555, 439, 71, 27);
 		panelGestionClientes.add(btnBorrar);
 		
 		JLabel lblId = new JLabel("ID:");
-		lblId.setBounds(327, 241, 60, 17);
+		lblId.setBounds(328, 271, 60, 17);
 		panelGestionClientes.add(lblId);
 		
 		JLabel lblNombre = new JLabel("Nombre:");
-		lblNombre.setBounds(327, 274, 60, 17);
+		lblNombre.setBounds(328, 304, 60, 17);
 		panelGestionClientes.add(lblNombre);
 		
 		JLabel lblEmail = new JLabel("Email:");
-		lblEmail.setBounds(327, 307, 60, 17);
+		lblEmail.setBounds(328, 337, 60, 17);
 		panelGestionClientes.add(lblEmail);
 		
 		JLabel lblTelfono = new JLabel("Teléfono:");
-		lblTelfono.setBounds(327, 340, 60, 17);
+		lblTelfono.setBounds(328, 370, 60, 17);
 		panelGestionClientes.add(lblTelfono);
 		
 		JLabel lblFechaAlta = new JLabel("Fecha Alta:");
-		lblFechaAlta.setBounds(327, 373, 75, 17);
+		lblFechaAlta.setBounds(328, 403, 75, 17);
 		panelGestionClientes.add(lblFechaAlta);
+		
+		JLabel lblBuscarCliente = new JLabel("Buscar cliente");
+		lblBuscarCliente.setBounds(264, 26, 84, 17);
+		panelGestionClientes.add(lblBuscarCliente);
+		
+		textField = new JTextField();
+		textField.setBounds(352, 24, 114, 21);
+		panelGestionClientes.add(textField);
+		textField.setColumns(10);
+		
+		JButton btnBuscar = new JButton("Buscar");
+		btnBuscar.setBounds(478, 21, 82, 27);
+		panelGestionClientes.add(btnBuscar);
 		
 		tableAdminCliente.addMouseListener(new MouseAdapter() {
 			@Override
@@ -291,16 +310,99 @@ public class GestionGimnasio {
 			}
 		});
 		
+		
+		
 		JPanel panelGestiónEntrenadores = new JPanel();
 		tabbedPane_2.addTab("Gestión Entrenadores", cargarIcono("img/939255.png"), panelGestiónEntrenadores);
 		panelGestiónEntrenadores.setLayout(null);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(75, 39, 288, 148);
+		scrollPane_1.setBounds(223, 91, 384, 192);
 		panelGestiónEntrenadores.add(scrollPane_1);
 		
-		tableAdminEntrenadores = new JTable();
+		tableAdminEntrenadores = new JTable(modelEntrenador);
 		scrollPane_1.setViewportView(tableAdminEntrenadores);
+		
+		JLabel lblBuscarEntrenador = new JLabel("Buscar entrenador");
+		lblBuscarEntrenador.setBounds(243, 46, 114, 17);
+		panelGestiónEntrenadores.add(lblBuscarEntrenador);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		textField_1.setBounds(367, 44, 114, 21);
+		panelGestiónEntrenadores.add(textField_1);
+		
+		JButton btnBuscar_1 = new JButton("Buscar");
+		btnBuscar_1.setBounds(493, 41, 82, 27);
+		panelGestiónEntrenadores.add(btnBuscar_1);
+		
+		textFieldIDentrenador = new JTextField();
+		textFieldIDentrenador.setEditable(false);
+		textFieldIDentrenador.setColumns(10);
+		textFieldIDentrenador.setBounds(401, 295, 114, 21);
+		panelGestiónEntrenadores.add(textFieldIDentrenador);
+		
+		JLabel lblId_2 = new JLabel("ID:");
+		lblId_2.setBounds(308, 297, 60, 17);
+		panelGestiónEntrenadores.add(lblId_2);
+		
+		JLabel lblNombre_2 = new JLabel("Nombre:");
+		lblNombre_2.setBounds(308, 330, 60, 17);
+		panelGestiónEntrenadores.add(lblNombre_2);
+		
+		JLabel lblEspecialidad = new JLabel("Especialidad:");
+		lblEspecialidad.setBounds(308, 363, 82, 17);
+		panelGestiónEntrenadores.add(lblEspecialidad);
+		
+		JButton btnInsertar_1_1 = new JButton("Insertar");
+		btnInsertar_1_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		btnInsertar_1_1.setBackground(new Color(102, 205, 170));
+		btnInsertar_1_1.setBounds(223, 430, 82, 27);
+		panelGestiónEntrenadores.add(btnInsertar_1_1);
+		
+		JButton btnActualizar_1 = new JButton("Actualizar");
+		btnActualizar_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int id = Integer.parseInt(textFieldIDentrenador.getText());
+				Entrenador ent = new Entrenador();
+				ent.setIdEntrenador(id);
+				ent.setNombre(textFieldNOMentrenador.getText());
+				ent.setEspecialidad(textFieldEspecialidad.getText());
+				daoEntrenador.updateEntrenador(ent);
+				modelEntrenador.setRowCount(0);
+				cargarTablaEntrenador(modelEntrenador);
+			}
+		});
+		btnActualizar_1.setBackground(new Color(70, 130, 180));
+		btnActualizar_1.setBounds(377, 430, 94, 27);
+		panelGestiónEntrenadores.add(btnActualizar_1);
+		
+		textFieldEspecialidad = new JTextField();
+		textFieldEspecialidad.setColumns(10);
+		textFieldEspecialidad.setBounds(401, 361, 114, 21);
+		panelGestiónEntrenadores.add(textFieldEspecialidad);
+		
+		textFieldNOMentrenador = new JTextField();
+		textFieldNOMentrenador.setColumns(10);
+		textFieldNOMentrenador.setBounds(401, 328, 114, 21);
+		panelGestiónEntrenadores.add(textFieldNOMentrenador);
+		
+		JButton btnBorrar_1 = new JButton("Borrar");
+		btnBorrar_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				daoEntrenador.deleteEntrenador(Integer.parseInt(textFieldIDentrenador.getText()));
+				JOptionPane.showMessageDialog(null, "Entrenador eliminado");
+				modelEntrenador.setRowCount(0);
+				cargarTablaEntrenador(modelEntrenador);
+			}
+		});
+		btnBorrar_1.setBackground(new Color(147, 112, 219));
+		btnBorrar_1.setBounds(536, 430, 71, 27);
+		panelGestiónEntrenadores.add(btnBorrar_1);
 		JPanel panelCliente = new JPanel();
 		tabbedPaneGYM.addTab("Clientes", cargarIcono("img/18272841.png"), panelCliente);
 		

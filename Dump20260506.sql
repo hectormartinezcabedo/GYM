@@ -30,6 +30,7 @@ CREATE TABLE `cliente` (
   `email` varchar(255) NOT NULL,
   `telefono` int NOT NULL,
   `fecha_alta` varchar(255) NOT NULL,
+  `contraseña` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`idCliente`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -40,7 +41,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (1,'admin','admin@gmail.com',123456789,' jnhuj45');
+INSERT INTO `cliente` VALUES (1,'admin','admin@gmail.com',123456789,' jnhuj45',NULL);
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,7 +159,8 @@ DROP TABLE IF EXISTS `entrenador`;
 CREATE TABLE `entrenador` (
   `idEntrenador` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) NOT NULL,
-  PRIMARY KEY (`idEntrenador`,`nombre`)
+  `especialidad` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`idEntrenador`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -168,7 +170,7 @@ CREATE TABLE `entrenador` (
 
 LOCK TABLES `entrenador` WRITE;
 /*!40000 ALTER TABLE `entrenador` DISABLE KEYS */;
-INSERT INTO `entrenador` VALUES (1,'Carlos'),(2,'Ana'),(3,'Luis');
+INSERT INTO `entrenador` VALUES (1,'Carlos',''),(2,'Ana',''),(3,'Luis','');
 /*!40000 ALTER TABLE `entrenador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -367,4 +369,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-05 16:35:51
+-- Dump completed on 2026-05-06 20:29:57

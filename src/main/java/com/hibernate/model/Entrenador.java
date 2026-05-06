@@ -21,11 +21,14 @@ public class Entrenador {
     @Column(name="nombre")
     private String nombre;
     
+    @Column(name="especialidad")
+    private String especialidad;
+    
     public Entrenador() {
     	
     }
 
-    public Entrenador(String nombre) {
+    public Entrenador(String nombre, String especialidad) {
     	this.nombre = nombre;
     }
 
@@ -43,6 +46,14 @@ public class Entrenador {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+	
+	public String getEspecialidad() {
+		return especialidad;
+	}
+
+	public void setEspecialidad(String especialidad) {
+		this.especialidad = especialidad;
 	}
 
 	
