@@ -30,6 +30,9 @@ public class Cliente {
     @Column(name="fecha_alta")
     private String fecha_alta;
     
+    @Column(name="contraseña")
+    private String contraseña;
+    
     public Cliente() {
     
     }
@@ -77,10 +80,20 @@ public class Cliente {
 	public String getFecha_alta() {
 		return fecha_alta;
 	}
-
+	
 	public void setFecha_alta(String fecha_alta) {
 		this.fecha_alta = fecha_alta;
 	}
+
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
+	}
+	
+	public String getContraseña() {
+		return contraseña;
+	}
+
+	
     
     
 }

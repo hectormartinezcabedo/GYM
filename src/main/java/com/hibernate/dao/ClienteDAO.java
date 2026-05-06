@@ -51,12 +51,27 @@ public class ClienteDAO  {
 		}
 	}
 
-	public Cliente selectPacienteById(int id) {
+	public Cliente selectClienteById(int id) {
 		Transaction transaction = null;
 		Cliente c = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			c = session.get(Cliente.class, id);
+			transaction.commit();
+		} catch (Exception e) {
+			if (transaction != null) {
+				transaction.rollback();
+			}
+		}
+		return c;
+	}
+	
+	public Cliente selectClienteByNombre(String nombre) {
+		Transaction transaction = null;
+		Cliente c = null;
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			transaction = session.beginTransaction();
+			c = session.get(Cliente.class, nombre);
 			transaction.commit();
 		} catch (Exception e) {
 			if (transaction != null) {

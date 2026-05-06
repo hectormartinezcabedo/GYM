@@ -10,6 +10,8 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.hibernate.dao.ClienteDAO;
 import com.hibernate.dao.EntrenadorDAO;
 import com.hibernate.model.Cliente;
@@ -76,6 +78,8 @@ public class GestionGimnasio {
 	private JTextField textField_Telefono;
 	private JTextField textField_Fecha_Alta;
 	private JTable tableAdminEntrenadores;
+	private JTextField textFieldUsuario;
+	private JTextField textFieldContraseña;
 
 	/**
 	 * Launch the application.
@@ -112,7 +116,7 @@ public class GestionGimnasio {
 		EntrenadorDAO daoEntrenador = new EntrenadorDAO();
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, 927, 566);
+		tabbedPane.setBounds(499, 275, 428, 291);
 		tabbedPane.setBorder(new CompoundBorder());
 		
 		JPanel panelAdmin = new JPanel();
@@ -373,5 +377,50 @@ public class GestionGimnasio {
 		
 		tableEntrenador = new JTable(modelEntrenador);
 		scrollPane_2.setViewportView(tableEntrenador);
+		
+		JButton btnIniciarSesion = new JButton("Iniciar Sesion");
+		btnIniciarSesion.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try{
+					Cliente cliente = new Cliente();
+					cliente = daoCliente.selectClienteByNombre(textFieldUsuario.getText());
+					 boolean esCorrecta = BCrypt.checkpw(textFieldContraseña.getText(), cliente.getContraseña());
+					if(cliente.getNombre().equals(textFieldUsuario.getText()) && esCorrecta) {
+						JOptionPane.showMessageDialog(frame, "Bienvenido "+cliente.getNombre(), "Informacion",
+						JOptionPane.INFORMATION_MESSAGE);
+					}else {
+						JOptionPane.showMessageDialog(frame, "Error en el usuario o la contraseña", "Warning",
+						JOptionPane.INFORMATION_MESSAGE);
+					}
+
+				}catch(Exception ex) {
+					JOptionPane.showMessageDialog(frame, "No existe el usuario", "Informacion",
+					JOptionPane.INFORMATION_MESSAGE);
+					ex.printStackTrace();
+				}
+			}
+		});
+		btnIniciarSesion.setBounds(118, 110, 115, 27);
+		frame.getContentPane().add(btnIniciarSesion);
+		
+		JButton btnRegistrarse = new JButton("Registrarse");
+		btnRegistrarse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String hash = BCrypt.hashpw(textFieldContraseña.getText(), BCrypt.gensalt());
+			}
+		});
+		btnRegistrarse.setBounds(118, 162, 115, 27);
+		frame.getContentPane().add(btnRegistrarse);
+		
+		textFieldUsuario = new JTextField();
+		textFieldUsuario.setBounds(118, 240, 114, 21);
+		frame.getContentPane().add(textFieldUsuario);
+		textFieldUsuario.setColumns(10);
+		
+		textFieldContraseña = new JTextField();
+		textFieldContraseña.setBounds(118, 288, 114, 21);
+		frame.getContentPane().add(textFieldContraseña);
+		textFieldContraseña.setColumns(10);
 	}
 }
