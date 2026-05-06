@@ -1,12 +1,15 @@
 package com.hibernate.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,6 +35,14 @@ public class Cliente {
     
     @Column(name="contraseña")
     private String contraseña;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "cliente_rutina",
+        joinColumns = @JoinColumn(name = "id_cliente"),
+        inverseJoinColumns = @JoinColumn(name = "id_rutina")
+    )
+    private List<Rutina> rutinas;
     
     public Cliente() {
     

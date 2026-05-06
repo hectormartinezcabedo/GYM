@@ -1,6 +1,7 @@
 package com.hibernate.main;
 
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Image;
 
 import javax.swing.JFrame;
@@ -10,6 +11,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -29,10 +31,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
-
+import javax.swing.RowFilter;
 import javax.swing.JLabel;
-import javax.swing.JComboBox;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.UIManager;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 
 public class GestionGimnasio {
@@ -73,6 +80,32 @@ public class GestionGimnasio {
 	    Image img = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
 	    return new ImageIcon(img);
 	}
+	
+	public ChartPanel crearGraficoStats() {
+
+	    ClienteDAO daoCliente = new ClienteDAO();
+	    EntrenadorDAO daoEntrenador = new EntrenadorDAO();
+
+	    int totalClientes = daoCliente.contarClientes();
+	    int clientesRecientes = daoCliente.contarClientesRecientes();
+	    int totalEntrenadores = daoEntrenador.contarEntrenadores();
+
+	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+	    dataset.addValue(totalClientes, "Datos", "Clientes");
+	    dataset.addValue(clientesRecientes, "Datos", "Últimos 30 días");
+	    dataset.addValue(totalEntrenadores, "Datos", "Entrenadores");
+
+	    JFreeChart chart = ChartFactory.createBarChart(
+	        "Estadísticas del Gimnasio",
+	        "Categoría",
+	        "Cantidad",
+	        dataset
+	    );
+	    chart.setBackgroundPaint(Color.white);
+
+	    return new ChartPanel(chart);
+	}
 
 	private JFrame frame;
 	private JTable tableAdminCliente;
@@ -112,6 +145,12 @@ public class GestionGimnasio {
 			}
 		});
 		
+		try {
+		    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -131,9 +170,12 @@ public class GestionGimnasio {
 		frame.getContentPane().setLayout(null);
 		ClienteDAO daoCliente = new ClienteDAO();
 		EntrenadorDAO daoEntrenador = new EntrenadorDAO();
+		Color primary = new Color(30, 30, 30);      // negro
+		Color accent = new Color(0, 150, 136);      // verde gym
+		Color danger = new Color(220, 53, 69);      // rojo
 		
 		JTabbedPane tabbedPaneGYM = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPaneGYM.setBounds(34, 12, 862, 542);
+		tabbedPaneGYM.setBounds(34, 12, 862, 532);
 		tabbedPaneGYM.setBorder(new CompoundBorder());
 		
 		JPanel panelAdmin = new JPanel();
@@ -141,7 +183,7 @@ public class GestionGimnasio {
 		panelAdmin.setLayout(null);
 		
 		JTabbedPane tabbedPane_2 = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane_2.setBounds(0, 0, 922, 537);
+		tabbedPane_2.setBounds(0, 0, 857, 504);
 		panelAdmin.add(tabbedPane_2);
 		
 		DefaultTableModel modelAdminCliente = new DefaultTableModel();
@@ -216,6 +258,7 @@ public class GestionGimnasio {
 		
 		JButton btnInsertar_1 = new JButton("Insertar");
 		btnInsertar_1.setBackground(new Color(102, 205, 170));
+		btnInsertar_1.setBackground(accent);
 		btnInsertar_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int telefono= Integer.parseInt(textField_Telefono.getText());
@@ -224,6 +267,10 @@ public class GestionGimnasio {
 				modelAdminCliente.setRowCount(0);
 				cargarTablaCliente(modelAdminCliente);
 				JOptionPane.showMessageDialog(null, "Cliente añadido correctamente");
+				textField_Nombre.setText("");
+				textField_Email.setText("");
+				textField_Telefono.setText("");
+				textField_Fecha_Alta.setText("");
 			}
 		});
 		btnInsertar_1.setBounds(242, 439, 82, 27);
@@ -252,6 +299,7 @@ public class GestionGimnasio {
 		
 		JButton btnBorrar = new JButton("Borrar");
 		btnBorrar.setBackground(new Color(147, 112, 219));
+		btnBorrar.setBackground(danger);
 		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				daoCliente.deleteCliente(Integer.parseInt(textField_ID.getText()));
@@ -293,6 +341,13 @@ public class GestionGimnasio {
 		textField.setColumns(10);
 		
 		JButton btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TableRowSorter<TableModel> sorter = new TableRowSorter<>(modelAdminCliente);
+			    tableAdminCliente.setRowSorter(sorter);
+			    sorter.setRowFilter(RowFilter.regexFilter(textField.getText()));
+			}
+		});
 		btnBuscar.setBounds(478, 21, 82, 27);
 		panelGestionClientes.add(btnBuscar);
 		
@@ -301,7 +356,7 @@ public class GestionGimnasio {
 			public void mouseClicked(MouseEvent e) {
 
 				int index = tableAdminCliente.getSelectedRow();
-				TableModel modelAdminCliente = tableCliente.getModel();
+				TableModel modelAdminCliente = tableAdminCliente.getModel();
 				textField_ID.setText(modelAdminCliente.getValueAt(index, 0).toString());
 				textField_Nombre.setText(modelAdminCliente.getValueAt(index, 1).toString());
 				textField_Email.setText(modelAdminCliente.getValueAt(index, 2).toString());
@@ -314,7 +369,31 @@ public class GestionGimnasio {
 		
 		JPanel panelGestiónEntrenadores = new JPanel();
 		tabbedPane_2.addTab("Gestión Entrenadores", cargarIcono("img/939255.png"), panelGestiónEntrenadores);
+		JPanel panelStats = new JPanel(new BorderLayout());
+		JLabel titulo = new JLabel("Dashboard del Gimnasio", JLabel.CENTER);
+		titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
+
+		panelStats.add(titulo, BorderLayout.NORTH);
+		panelStats.add(crearGraficoStats(), BorderLayout.CENTER);
+		tabbedPane_2.addTab("Estadísticas", cargarIcono("img/18272841.png"), panelStats);
 		panelGestiónEntrenadores.setLayout(null);
+		
+		JButton btnRefresh = new JButton("Actualizar");
+
+		btnRefresh.addActionListener(e -> {
+		    panelStats.removeAll();
+
+		    JLabel t = new JLabel("Dashboard del Gimnasio", JLabel.CENTER);
+		    t.setFont(new Font("Segoe UI", Font.BOLD, 20));
+
+		    panelStats.add(t, BorderLayout.NORTH);
+		    panelStats.add(crearGraficoStats(), BorderLayout.CENTER);
+
+		    panelStats.revalidate();
+		    panelStats.repaint();
+		});
+
+		panelStats.add(btnRefresh, BorderLayout.SOUTH);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(223, 91, 384, 192);
@@ -357,7 +436,13 @@ public class GestionGimnasio {
 		JButton btnInsertar_1_1 = new JButton("Insertar");
 		btnInsertar_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				Entrenador ent = new Entrenador();
+			    ent.setNombre(textFieldNOMentrenador.getText());
+			    ent.setEspecialidad(textFieldEspecialidad.getText());
+			    daoEntrenador.insertEntrenador(ent);
+			    modelEntrenador.setRowCount(0);
+			    cargarTablaEntrenador(modelEntrenador);
+			    JOptionPane.showMessageDialog(null, "Entrenador añadido");
 			}
 		});
 		btnInsertar_1_1.setBackground(new Color(102, 205, 170));
@@ -507,7 +592,13 @@ public class GestionGimnasio {
 		
 		JPanel panelEntrenador = new JPanel();
 		tabbedPaneGYM.addTab("Entrenador", cargarIcono("img/939255.png"), panelEntrenador);
+
+		panelStats.add(titulo, BorderLayout.NORTH);
+		panelStats.add(crearGraficoStats(), BorderLayout.CENTER);
 		panelEntrenador.setLayout(null);
+		
+
+		panelStats.add(btnRefresh, BorderLayout.SOUTH);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
 		scrollPane_2.setBounds(69, 63, 161, 111);
@@ -548,23 +639,23 @@ public class GestionGimnasio {
 		btnIniciarSesion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				try{
-					Cliente cliente = new Cliente();
-					cliente = daoCliente.selectClienteByNombre(textFieldUsuario.getText());
-					 boolean esCorrecta = BCrypt.checkpw(textFieldContraseña.getText(), cliente.getContraseña());
-					if(cliente.getNombre().equals(textFieldUsuario.getText()) && esCorrecta) {
-						JOptionPane.showMessageDialog(frame, "Bienvenido "+cliente.getNombre(), "Informacion",
-						JOptionPane.INFORMATION_MESSAGE);
-					}else {
-						JOptionPane.showMessageDialog(frame, "Error en el usuario o la contraseña", "Warning",
-						JOptionPane.INFORMATION_MESSAGE);
-					}
+				try {
+			        Cliente cliente = daoCliente.selectClienteByNombre(textFieldUsuario.getText());
 
-				}catch(Exception ex) {
-					JOptionPane.showMessageDialog(frame, "No existe el usuario", "Informacion",
-					JOptionPane.INFORMATION_MESSAGE);
-					ex.printStackTrace();
-				}
+			        boolean esCorrecta = BCrypt.checkpw(
+			            textFieldContraseña.getText(), 
+			            cliente.getContraseña()
+			        );
+
+			        if (esCorrecta) {
+			            JOptionPane.showMessageDialog(frame, "Bienvenido " + cliente.getNombre());
+			        } else {
+			            JOptionPane.showMessageDialog(frame, "Contraseña incorrecta");
+			        }
+
+			    } catch (Exception ex) {
+			        JOptionPane.showMessageDialog(frame, "Usuario no existe");
+			    }
 			}
 		});
 		

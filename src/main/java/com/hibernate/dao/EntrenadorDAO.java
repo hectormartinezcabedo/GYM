@@ -80,5 +80,16 @@ public class EntrenadorDAO{
 		}
 		return entrenadores;
 	}
+	
+	public int contarEntrenadores() {
+	    Session session = HibernateUtil.getSessionFactory().openSession();
+
+	    Long total = (Long) session.createQuery(
+	        "SELECT COUNT(e) FROM Entrenador e"
+	    ).uniqueResult();
+
+	    session.close();
+	    return total.intValue();
+	}
     
 }
