@@ -1,6 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `gimnasio` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `gimnasio`;
--- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.46, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: gimnasio
 -- ------------------------------------------------------
@@ -29,8 +29,9 @@ CREATE TABLE `cliente` (
   `nombre` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `telefono` int NOT NULL,
-  `fecha_alta` varchar(255) NOT NULL,
-  `contraseña` varchar(255) DEFAULT NULL,
+  `fecha_alta` date NOT NULL,
+  `contraseña` varchar(255) NOT NULL,
+  `rol` varchar(20) NOT NULL,
   PRIMARY KEY (`idCliente`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -41,7 +42,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (1,'admin','admin@gmail.com',123456789,' jnhuj45',NULL);
+INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN'),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$8ryxqzw8IsguTJoDS33yZuuIxO/Rxt4F1XSoMurmD/Jb.sWd4hx1.','CLIENTE');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -80,10 +81,13 @@ CREATE TABLE `cliente_rutina` (
   `fecha_inicio` date DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
   `observaciones` text,
+  `idCliente` int NOT NULL,
   PRIMARY KEY (`id_cliente`,`id_rutina`),
   KEY `id_rutina` (`id_rutina`),
+  KEY `FKb6cwbcvgstbop2jcigs8j80bl` (`idCliente`),
   CONSTRAINT `cliente_rutina_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`idCliente`) ON DELETE CASCADE,
-  CONSTRAINT `cliente_rutina_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE
+  CONSTRAINT `cliente_rutina_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE,
+  CONSTRAINT `FKb6cwbcvgstbop2jcigs8j80bl` FOREIGN KEY (`idCliente`) REFERENCES `cliente` (`idCliente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -269,6 +273,28 @@ INSERT INTO `grupo_muscular_SEQ` VALUES (1);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `hibernate_sequence`
+--
+
+DROP TABLE IF EXISTS `hibernate_sequence`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `hibernate_sequence` (
+  `next_val` bigint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `hibernate_sequence`
+--
+
+LOCK TABLES `hibernate_sequence` WRITE;
+/*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
+INSERT INTO `hibernate_sequence` VALUES (4);
+/*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `progreso`
 --
 
@@ -369,4 +395,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-06 20:29:57
+-- Dump completed on 2026-05-07 12:23:11

@@ -3,14 +3,8 @@ package com.hibernate.model;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "cliente")
@@ -31,15 +25,18 @@ public class Cliente {
     private int telefono;
     
     @Column(name="fecha_alta")
-    private String fecha_alta;
+    private LocalDate fecha_alta;
     
     @Column(name="contraseña")
     private String contraseña;
     
+    @Column(name="rol")
+    private String rol;
+    
     @ManyToMany
     @JoinTable(
         name = "cliente_rutina",
-        joinColumns = @JoinColumn(name = "id_cliente"),
+        joinColumns = @JoinColumn(name = "idCliente"),
         inverseJoinColumns = @JoinColumn(name = "id_rutina")
     )
     private List<Rutina> rutinas;
@@ -49,7 +46,7 @@ public class Cliente {
     }
 
     
-    public Cliente(String nombre, String email, int telefono, String fecha_alta) {
+    public Cliente(String nombre, String email, int telefono, LocalDate fecha_alta) {
     	this.nombre = nombre;
     	this.email = email;
     	this.telefono = telefono;
@@ -88,11 +85,11 @@ public class Cliente {
 		this.telefono = telefono;
 	}
 
-	public String getFecha_alta() {
+	public LocalDate getFecha_alta() {
 		return fecha_alta;
 	}
 	
-	public void setFecha_alta(String fecha_alta) {
+	public void setFecha_alta(LocalDate fecha_alta) {
 		this.fecha_alta = fecha_alta;
 	}
 
@@ -104,7 +101,21 @@ public class Cliente {
 		return contraseña;
 	}
 
+	public String getRol() {
+	    return rol;
+	}
+
+	public void setRol(String rol) {
+	    this.rol = rol;
+	}
 	
+	public List<Rutina> getRutinas() {
+	    return rutinas;
+	}
+
+	public void setRutinas(List<Rutina> rutinas) {
+	    this.rutinas = rutinas;
+	}
     
     
 }

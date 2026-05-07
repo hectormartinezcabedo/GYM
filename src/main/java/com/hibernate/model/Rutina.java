@@ -1,8 +1,20 @@
 package com.hibernate.model;
 
 import java.util.List;
-import jakarta.persistence.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import com.hibernate.model.Cliente;
+
 
 @Entity
 @Table(name = "rutina")
@@ -46,6 +58,8 @@ public class Rutina {
         this.descripcion = descripcion;
         this.dificultad = dificultad;
     }
+    
+   
 
     // 🔧 GETTERS Y SETTERS
 
@@ -97,7 +111,6 @@ public class Rutina {
         this.ejercicios = ejercicios;
     }
 
-    // 🔥 IMPORTANTE PARA COMBOBOX
     @Override
     public String toString() {
         return nombre;

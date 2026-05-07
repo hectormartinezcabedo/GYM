@@ -5,23 +5,23 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.hibernate.model.GrupoMuscular;
+import com.hibernate.model.Rutina;
 import com.hibernate.util.HibernateUtil;
 
-public class GrupoMuscularDAO {
+public class RutinaDAO {
 
-    public List<GrupoMuscular> obtenerTodos() {
+    public List<Rutina> obtenerRutinas() {
 
         Transaction transaction = null;
-        List<GrupoMuscular> grupos = null;
+        List<Rutina> rutinas = null;
 
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
 
             transaction = session.beginTransaction();
 
-            grupos = session.createQuery(
-                "from GrupoMuscular",
-                GrupoMuscular.class
+            rutinas = session.createQuery(
+                "from Rutina",
+                Rutina.class
             ).list();
 
             transaction.commit();
@@ -30,6 +30,6 @@ public class GrupoMuscularDAO {
             e.printStackTrace();
         }
 
-        return grupos;
+        return rutinas;
     }
 }

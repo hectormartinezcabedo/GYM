@@ -69,18 +69,44 @@ public class ClienteDAO  {
 	}
 	
 	public Cliente selectClienteByNombre(String nombre) {
-		Transaction transaction = null;
-		Cliente c = null;
-		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			transaction = session.beginTransaction();
-			c = session.get(Cliente.class, nombre);
-			transaction.commit();
-		} catch (Exception e) {
-			if (transaction != null) {
-				transaction.rollback();
-			}
-		}
-		return c;
+
+	    Transaction tx = null;
+	    Cliente cliente = null;
+
+	    try (Session session =
+	            HibernateUtil.getSessionFactory().openSession()) {
+
+	        tx = session.beginTransaction();
+
+	        Query<Cliente> query = session.createQuery(
+	            "FROM Cliente WHERE nombre = :nombre",
+	            Cliente.class
+	        );
+
+	        query.setParameter("nombre", nombre);
+
+	        cliente = query.uniqueResult();
+
+	        tx.commit();
+
+	    } catch(Exception e) {
+
+	        if(tx != null) {
+
+	            try {
+
+	                tx.rollback();
+
+	            } catch(Exception ex) {
+
+	                ex.printStackTrace();
+	            }
+	        }
+
+	        e.printStackTrace();
+	    }
+
+	    return cliente;
 	}
 
 	public List<Cliente> selectAllClientes() {
@@ -114,7 +140,7 @@ public class ClienteDAO  {
 
 	    LocalDate fecha = LocalDate.now().minusDays(30);
 
-	    query.setParameter("fecha", fecha.toString()); // si guardas como String
+	    query.setParameter("fecha", fecha);
 
 	    Long total = (Long) query.uniqueResult();
 

@@ -9,9 +9,11 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 
 import com.hibernate.model.Cliente;
+import com.hibernate.model.Dificultad;
 import com.hibernate.model.Ejercicio;
 import com.hibernate.model.Entrenador;
 import com.hibernate.model.GrupoMuscular;
+import com.hibernate.model.Rutina;
 
 
 
@@ -35,9 +37,11 @@ public class HibernateUtil {
 				settings.put(Environment.HBM2DDL_AUTO, "update");
 				configuration.setProperties(settings);
 				configuration.addAnnotatedClass(Cliente.class);
-				//configuration.addAnnotatedClass(Ejercicio.class);
+				configuration.addAnnotatedClass(Ejercicio.class);
 				configuration.addAnnotatedClass(GrupoMuscular.class);
 				configuration.addAnnotatedClass(Entrenador.class);
+				configuration.addAnnotatedClass(Rutina.class);
+				configuration.addAnnotatedClass(Dificultad.class);
 				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 						.applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
