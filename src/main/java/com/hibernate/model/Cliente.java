@@ -1,6 +1,7 @@
 package com.hibernate.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -33,13 +34,16 @@ public class Cliente {
     @Column(name="rol")
     private String rol;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "cliente_rutina",
         joinColumns = @JoinColumn(name = "idCliente"),
         inverseJoinColumns = @JoinColumn(name = "id_rutina")
     )
-    private List<Rutina> rutinas;
+    
+    
+    
+    private List<Rutina> rutinas = new ArrayList<>();
     
     public Cliente() {
     

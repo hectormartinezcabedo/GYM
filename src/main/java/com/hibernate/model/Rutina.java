@@ -23,7 +23,7 @@ public class Rutina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_rutina")
-    private int id;
+    private int idRutina;
 
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
@@ -63,12 +63,12 @@ public class Rutina {
 
     // 🔧 GETTERS Y SETTERS
 
-    public int getId() {
-        return id;
+    public int getIdRutina() {
+        return idRutina;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdRutina(int idRutina) {
+        this.idRutina = idRutina;
     }
 
     public String getNombre() {

@@ -1,6 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS `gimnasio` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `gimnasio`;
--- MySQL dump 10.13  Distrib 8.0.46, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
 --
 -- Host: 127.0.0.1    Database: gimnasio
 -- ------------------------------------------------------
@@ -29,11 +29,11 @@ CREATE TABLE `cliente` (
   `nombre` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `telefono` int NOT NULL,
-  `fecha_alta` date NOT NULL,
+  `fecha_alta` varchar(255) DEFAULT NULL,
   `contraseña` varchar(255) NOT NULL,
   `rol` varchar(20) NOT NULL,
   PRIMARY KEY (`idCliente`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN'),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$8ryxqzw8IsguTJoDS33yZuuIxO/Rxt4F1XSoMurmD/Jb.sWd4hx1.','CLIENTE');
+INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN'),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$8ryxqzw8IsguTJoDS33yZuuIxO/Rxt4F1XSoMurmD/Jb.sWd4hx1.','CLIENTE'),(4,'hector','hector@gmail.com',644021507,'2026-05-08','$2a$10$seJM2WDUvRHpQjatQOqbou.Q5.3917X6W.hsU11dXOthvBT0qiE5W','CLIENTE');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -290,7 +290,7 @@ CREATE TABLE `hibernate_sequence` (
 
 LOCK TABLES `hibernate_sequence` WRITE;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
-INSERT INTO `hibernate_sequence` VALUES (4);
+INSERT INTO `hibernate_sequence` VALUES (5);
 /*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,4 +395,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-07 12:23:11
+-- Dump completed on 2026-05-08 17:14:51

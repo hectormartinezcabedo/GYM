@@ -25,7 +25,8 @@ public class Entrenador {
     }
 
     public Entrenador(String nombre, String especialidad) {
-    	this.nombre = nombre;
+        this.nombre = nombre;
+        this.especialidad = especialidad;
     }
 
 	public int getIdEntrenador() {

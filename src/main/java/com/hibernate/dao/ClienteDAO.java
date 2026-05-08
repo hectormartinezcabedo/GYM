@@ -10,7 +10,7 @@ import org.hibernate.query.Query;
 import com.hibernate.model.Cliente;
 import com.hibernate.util.HibernateUtil;
 
-public class ClienteDAO  {
+public class ClienteDAO {
 
 	public void insertCliente(Cliente c) {
 		Transaction transaction = null;
@@ -67,46 +67,42 @@ public class ClienteDAO  {
 		}
 		return c;
 	}
-	
+
 	public Cliente selectClienteByNombre(String nombre) {
 
-	    Transaction tx = null;
-	    Cliente cliente = null;
+		Transaction tx = null;
+		Cliente cliente = null;
 
-	    try (Session session =
-	            HibernateUtil.getSessionFactory().openSession()) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
-	        tx = session.beginTransaction();
+			tx = session.beginTransaction();
 
-	        Query<Cliente> query = session.createQuery(
-	            "FROM Cliente WHERE nombre = :nombre",
-	            Cliente.class
-	        );
+			Query<Cliente> query = session.createQuery("FROM Cliente WHERE nombre = :nombre", Cliente.class);
 
-	        query.setParameter("nombre", nombre);
+			query.setParameter("nombre", nombre);
 
-	        cliente = query.uniqueResult();
+			cliente = query.uniqueResult();
 
-	        tx.commit();
+			tx.commit();
 
-	    } catch(Exception e) {
+		} catch (Exception e) {
 
-	        if(tx != null) {
+			if (tx != null) {
 
-	            try {
+				try {
 
-	                tx.rollback();
+					tx.rollback();
 
-	            } catch(Exception ex) {
+				} catch (Exception ex) {
 
-	                ex.printStackTrace();
-	            }
-	        }
+					ex.printStackTrace();
+				}
+			}
 
-	        e.printStackTrace();
-	    }
+			e.printStackTrace();
+		}
 
-	    return cliente;
+		return cliente;
 	}
 
 	public List<Cliente> selectAllClientes() {
@@ -123,28 +119,26 @@ public class ClienteDAO  {
 		}
 		return clientes;
 	}
-    
+
 	public int contarClientes() {
-	    Session session = HibernateUtil.getSessionFactory().openSession();
-	    Long total = (Long) session.createQuery("SELECT COUNT(c) FROM Cliente c").uniqueResult();
-	    session.close();
-	    return total.intValue();
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Long total = (Long) session.createQuery("SELECT COUNT(c) FROM Cliente c").uniqueResult();
+		session.close();
+		return total.intValue();
 	}
-	
+
 	public int contarClientesRecientes() {
-	    Session session = HibernateUtil.getSessionFactory().openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 
-	    Query query = session.createQuery(
-	        "SELECT COUNT(c) FROM Cliente c WHERE c.fecha_alta >= :fecha"
-	    );
+		Query query = session.createQuery("SELECT COUNT(c) FROM Cliente c WHERE c.fecha_alta >= :fecha");
 
-	    LocalDate fecha = LocalDate.now().minusDays(30);
+		LocalDate fecha = LocalDate.now().minusDays(30);
 
-	    query.setParameter("fecha", fecha);
+		query.setParameter("fecha", fecha);
 
-	    Long total = (Long) query.uniqueResult();
+		Long total = (Long) query.uniqueResult();
 
-	    session.close();
-	    return total.intValue();
+		session.close();
+		return total.intValue();
 	}
 }
