@@ -141,4 +141,14 @@ public class ClienteDAO {
 		session.close();
 		return total.intValue();
 	}
+	
+	public List<Cliente> selectClientesByEntrenador(int idEntrenador) {
+	    Session session = HibernateUtil.getSessionFactory().openSession();
+	    List<Cliente> lista = session.createQuery(
+	        "FROM Cliente c WHERE c.entrenador.idEntrenador = :id", Cliente.class)
+	        .setParameter("id", idEntrenador)
+	        .getResultList();
+	    session.close();
+	    return lista;
+	}
 }

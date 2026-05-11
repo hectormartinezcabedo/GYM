@@ -17,8 +17,10 @@ import javax.swing.table.TableRowSorter;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.hibernate.dao.ClienteDAO;
+import com.hibernate.dao.EjercicioDAO;
 import com.hibernate.dao.EntrenadorDAO;
 import com.hibernate.model.Cliente;
+import com.hibernate.model.Ejercicio;
 import com.hibernate.model.Entrenador;
 
 import javax.swing.ImageIcon;
@@ -45,9 +47,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JComboBox;
 import com.hibernate.dao.GrupoMuscularDAO;
+import com.hibernate.dao.ProgresoDAO;
 import com.hibernate.model.GrupoMuscular;
+import com.hibernate.model.Progreso;
 import com.hibernate.dao.RutinaDAO;
 import com.hibernate.model.Rutina;
+import com.hibernate.util.EmailService;
 
 public class GestionGimnasio {
 
@@ -105,6 +110,21 @@ public class GestionGimnasio {
 			textFieldEmail.setText(clienteLogueado.getEmail());
 			textFieldTelefono.setText(String.valueOf(clienteLogueado.getTelefono()));
 			textFieldFechaAlta.setText(clienteLogueado.getFecha_alta().toString());
+			
+			if (clienteLogueado.getEntrenador() != null) {
+	            comboEntrenadorCliente.setSelectedItem(clienteLogueado.getEntrenador());
+	        }
+			if (modelRutinas != null) {
+			    modelRutinas.setRowCount(0);
+			    for (Rutina r : clienteLogueado.getRutinas()) {
+			        modelRutinas.addRow(new Object[]{
+			            r.getIdRutina(),
+			            r.getNombre(),
+			            r.getDescripcion(),
+			            r.getDificultad() != null ? r.getDificultad().toString() : "-"
+			        });
+			    }
+			}
 		}
 	}
 
@@ -134,6 +154,20 @@ public class GestionGimnasio {
 
 		return new ChartPanel(chart);
 	}
+	
+	void cargarProgreso(DefaultTableModel modelProgreso) {
+	    if (clienteLogueado == null || modelProgreso == null) return;
+	    modelProgreso.setRowCount(0);
+	    ProgresoDAO dao = new ProgresoDAO();
+	    for (Progreso p : dao.selectProgresoByCliente(clienteLogueado.getIdCliente())) {
+	        modelProgreso.addRow(new Object[]{
+	            p.getEjercicio().getNombre(),
+	            p.getPesoUtilizado(),
+	            p.getRepeticiones(),
+	            p.getFecha().toString()
+	        });
+	    }
+	}
 
 	private JFrame frame;
 	private JTable tableAdminCliente;
@@ -158,6 +192,11 @@ public class GestionGimnasio {
 	private JTextField textFieldEspecialidad;
 	private JTextField textFieldNOMentrenador;
 	private Cliente clienteLogueado;
+	private JComboBox<Entrenador> comboEntrenadorCliente;
+	private DefaultTableModel modelClientesEntrenador;
+	private DefaultTableModel modelRutinas;
+	private DefaultTableModel modelEjercicios;
+	private DefaultTableModel modelProgreso;
 
 	/**
 	 * Launch the application.
@@ -625,45 +664,231 @@ public class GestionGimnasio {
 		JLabel lblFechaAlta_1 = new JLabel("Fecha Alta:");
 		lblFechaAlta_1.setBounds(330, 344, 75, 17);
 		panelPerfil.add(lblFechaAlta_1);
+		
+		// --- ASIGNAR ENTRENADOR (panel Perfil del Cliente) ---
+		JLabel lblEntrenadorAsignado = new JLabel("Tu entrenador:");
+		lblEntrenadorAsignado.setBounds(330, 378, 100, 17);
+		panelPerfil.add(lblEntrenadorAsignado);
 
+		comboEntrenadorCliente = new JComboBox<>();
+		comboEntrenadorCliente.setBounds(413, 375, 180, 25);
+		for (Entrenador ent : daoEntrenador.selectAllEntrenadores()) {
+		    comboEntrenadorCliente.addItem(ent);
+		}
+		panelPerfil.add(comboEntrenadorCliente);
+
+		JButton btnAsignarEntrenador = new JButton("Asignar Entrenador");
+		btnAsignarEntrenador.setBackground(new Color(0, 150, 136));
+		btnAsignarEntrenador.setBounds(330, 415, 160, 27);
+		btnAsignarEntrenador.addActionListener(ev -> {
+		    if (clienteLogueado == null) return;
+		    Entrenador entSeleccionado = (Entrenador) comboEntrenadorCliente.getSelectedItem();
+		    clienteLogueado.setEntrenador(entSeleccionado);   
+		    daoCliente.updateCliente(clienteLogueado);
+		    JOptionPane.showMessageDialog(frame,
+		        "Entrenador asignado: " + entSeleccionado.getNombre());
+		});
+		panelPerfil.add(btnAsignarEntrenador);
+
+		
+		
 		JPanel panelRutinas = new JPanel();
 		panelRutinas.setLayout(null);
-		JLabel lblGrupo = new JLabel("Grupo muscular:");
-		lblGrupo.setBounds(40, 30, 120, 25);
-		panelRutinas.add(lblGrupo);
 
-		JComboBox<GrupoMuscular> comboGrupo = new JComboBox<>();
-		comboGrupo.setBounds(170, 30, 180, 25);
-		panelRutinas.add(comboGrupo);
-
-		GrupoMuscularDAO grupoDAO = new GrupoMuscularDAO();
-
-		for (GrupoMuscular g : grupoDAO.obtenerTodos()) {
-			comboGrupo.addItem(g);
-		}
-		DefaultTableModel modelRutinas = new DefaultTableModel() {
-
-			@Override
-			public boolean isCellEditable(int row, int column) {
-
-				return false;
-			}
+		// --- TABLA RUTINAS ---
+		modelRutinas = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) { return false; }
 		};
-
 		modelRutinas.addColumn("ID");
 		modelRutinas.addColumn("Nombre");
-		modelRutinas.addColumn("Objetivo");
+		modelRutinas.addColumn("Descripción");
 		modelRutinas.addColumn("Dificultad");
 
 		JTable tableRutinas = new JTable(modelRutinas);
-
 		JScrollPane scrollRutinas = new JScrollPane(tableRutinas);
-
-		scrollRutinas.setBounds(40, 40, 500, 250);
-
+		scrollRutinas.setBounds(10, 10, 580, 120);
 		panelRutinas.add(scrollRutinas);
+
+		// --- FILTRO GRUPO MUSCULAR ---
+		JLabel lblGrupo = new JLabel("Grupo muscular:");
+		lblGrupo.setBounds(10, 140, 120, 25);
+		panelRutinas.add(lblGrupo);
+
+		GrupoMuscularDAO grupoDAO = new GrupoMuscularDAO();
+		EjercicioDAO ejercicioDAO = new EjercicioDAO();
+
+		JComboBox<GrupoMuscular> comboGrupo = new JComboBox<>();
+		comboGrupo.setBounds(130, 140, 180, 25);
+		for (GrupoMuscular g : grupoDAO.obtenerTodos()) {
+		    comboGrupo.addItem(g);
+		}
+		panelRutinas.add(comboGrupo);
+
+		// --- TABLA EJERCICIOS ---
+		modelEjercicios = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) { return false; }
+		};
+		modelEjercicios.addColumn("ID");
+		modelEjercicios.addColumn("Nombre");
+		modelEjercicios.addColumn("Descripción");
+
+		JTable tableEjercicios = new JTable(modelEjercicios);
+		JScrollPane scrollEjercicios = new JScrollPane(tableEjercicios);
+		scrollEjercicios.setBounds(10, 175, 380, 120);
+		panelRutinas.add(scrollEjercicios);
+
+		// --- GIF EJERCICIO ---
+		JLabel lblGif = new JLabel();
+		lblGif.setBounds(400, 140, 200, 160);
+		lblGif.setBorder(javax.swing.BorderFactory.createLineBorder(Color.GRAY));
+		panelRutinas.add(lblGif);
+
+		// --- AL SELECCIONAR EJERCICIO MUESTRA GIF ---
+		tableEjercicios.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseClicked(MouseEvent e) {
+		        int fila = tableEjercicios.getSelectedRow();
+		        if (fila == -1) return;
+		        // Buscar ejercicio seleccionado
+		        int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(fila, 0).toString());
+		        List<Ejercicio> todos = ejercicioDAO.selectAll();
+		        for (Ejercicio ej : todos) {
+		            if (ej.getIdEjercicio() == idEjercicio) {
+		                String ruta = ej.getVideo();
+		                ImageIcon gif = new ImageIcon(ruta);
+		                Image img = gif.getImage().getScaledInstance(200, 160, Image.SCALE_DEFAULT);
+		                lblGif.setIcon(new ImageIcon(img));
+		                break;
+		            }
+		        }
+		    }
+		});
+
+		// --- FILTRAR EJERCICIOS POR GRUPO ---
+		JButton btnFiltrar = new JButton("Filtrar");
+		btnFiltrar.setBounds(320, 140, 80, 25);
+		btnFiltrar.addActionListener(ev -> {
+		    GrupoMuscular grupoSel = (GrupoMuscular) comboGrupo.getSelectedItem();
+		    modelEjercicios.setRowCount(0);
+		    lblGif.setIcon(null);
+		    for (Ejercicio ej : ejercicioDAO.selectByGrupoMuscular(grupoSel.getId_grupo_muscular())) {
+		        modelEjercicios.addRow(new Object[]{
+		            ej.getIdEjercicio(),
+		            ej.getNombre(),
+		            ej.getDescripcion()
+		        });
+		    }
+		});
+		panelRutinas.add(btnFiltrar);
+
+		// --- PANEL PROGRESO ---
+		JLabel lblTituloProgreso = new JLabel("Mi Progreso:");
+		lblTituloProgreso.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		lblTituloProgreso.setBounds(10, 305, 120, 25);
+		panelRutinas.add(lblTituloProgreso);
+
+		modelProgreso = new DefaultTableModel() {
+		    @Override
+		    public boolean isCellEditable(int row, int column) { return false; }
+		};
+		modelProgreso.addColumn("Ejercicio");
+		modelProgreso.addColumn("Peso (kg)");
+		modelProgreso.addColumn("Reps");
+		modelProgreso.addColumn("Fecha");
+
+		JTable tableProgreso = new JTable(modelProgreso);
+		JScrollPane scrollProgreso = new JScrollPane(tableProgreso);
+		scrollProgreso.setBounds(10, 330, 380, 100);
+		panelRutinas.add(scrollProgreso);
+
+		// --- REGISTRO PROGRESO ---
+		JLabel lblPeso = new JLabel("Peso:");
+		lblPeso.setBounds(400, 310, 40, 25);
+		panelRutinas.add(lblPeso);
+
+		JTextField txtPeso = new JTextField();
+		txtPeso.setBounds(440, 310, 60, 25);
+		panelRutinas.add(txtPeso);
+
+		JLabel lblReps = new JLabel("Reps:");
+		lblReps.setBounds(510, 310, 40, 25);
+		panelRutinas.add(lblReps);
+
+		JTextField txtReps = new JTextField();
+		txtReps.setBounds(550, 310, 50, 25);
+		panelRutinas.add(txtReps);
+
+		JButton btnGuardarProgreso = new JButton("Guardar progreso");
+		btnGuardarProgreso.setBackground(new Color(0, 150, 136));
+		btnGuardarProgreso.setBounds(400, 345, 160, 27);
+		btnGuardarProgreso.addActionListener(ev -> {
+
+		    // VALIDACIONES
+		    if (clienteLogueado == null) {
+		        JOptionPane.showMessageDialog(frame, "No hay cliente logueado");
+		        return;
+		    }
+		    int filaEj = tableEjercicios.getSelectedRow();
+		    if (filaEj == -1) {
+		        JOptionPane.showMessageDialog(frame, "Selecciona un ejercicio");
+		        return;
+		    }
+		    if (txtPeso.getText().trim().isEmpty()) {
+		        JOptionPane.showMessageDialog(frame, "Introduce el peso");
+		        return;
+		    }
+		    if (txtReps.getText().trim().isEmpty()) {
+		        JOptionPane.showMessageDialog(frame, "Introduce las repeticiones");
+		        return;
+		    }
+
+		    try {
+		        double peso = Double.parseDouble(txtPeso.getText().trim());
+		        int reps = Integer.parseInt(txtReps.getText().trim());
+
+		        if (peso <= 0 || reps <= 0) {
+		            JOptionPane.showMessageDialog(frame, "Peso y repeticiones deben ser mayores que 0");
+		            return;
+		        }
+
+		        int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(filaEj, 0).toString());
+		        Ejercicio ejercicioSel = null;
+		        for (Ejercicio ej : ejercicioDAO.selectAll()) {
+		            if (ej.getIdEjercicio() == idEjercicio) {
+		                ejercicioSel = ej;
+		                break;
+		            }
+		        }
+
+		        ProgresoDAO progresoDAO = new ProgresoDAO();
+		        Progreso p = new Progreso();
+		        p.setCliente(clienteLogueado);
+		        p.setEjercicio(ejercicioSel);
+		        p.setPesoUtilizado(peso);
+		        p.setRepeticiones(reps);
+		        p.setFecha(LocalDate.now());
+		        progresoDAO.insertProgreso(p);
+
+		        // Recargar tabla progreso
+		        cargarProgreso(modelProgreso);
+
+		        txtPeso.setText("");
+		        txtReps.setText("");
+		        JOptionPane.showMessageDialog(frame, "Progreso guardado");
+
+		    } catch (NumberFormatException ex) {
+		        JOptionPane.showMessageDialog(frame, "Peso y repeticiones deben ser números válidos");
+		    }
+		});
+		panelRutinas.add(btnGuardarProgreso);
+
 		tabbedPane_1.addTab("Rutinas", null, panelRutinas, null);
-		panelRutinas.setLayout(null);
+		
+		
+		
+		
 		frame.getContentPane().add(tabbedPaneGYM);
 		tabbedPaneGYM.setVisible(false);
 
@@ -674,7 +899,7 @@ public class GestionGimnasio {
 		panelStats.add(crearGraficoStats(), BorderLayout.CENTER);
 		panelEntrenador.setLayout(null);
 		// TABLA CLIENTES
-		DefaultTableModel modelClientesEntrenador = new DefaultTableModel() {
+		modelClientesEntrenador = new DefaultTableModel() {
 
 			@Override
 			public boolean isCellEditable(int r, int c) {
@@ -685,10 +910,7 @@ public class GestionGimnasio {
 		modelClientesEntrenador.addColumn("ID");
 		modelClientesEntrenador.addColumn("Nombre");
 
-		for (Cliente c : daoCliente.selectAllClientes()) {
-
-			modelClientesEntrenador.addRow(new Object[] { c.getIdCliente(), c.getNombre() });
-		}
+		
 
 		JTable tablaClientesAsignacion = new JTable(modelClientesEntrenador);
 
@@ -722,26 +944,38 @@ public class GestionGimnasio {
 		JButton btnAsignarRutina = new JButton("Asignar Rutina");
 		btnAsignarRutina.addActionListener(e -> {
 
-			int fila = tablaClientesAsignacion.getSelectedRow();
+		    int fila = tablaClientesAsignacion.getSelectedRow();
 
-			if (fila == -1) {
+		    if (fila == -1) {
+		        JOptionPane.showMessageDialog(frame, "Selecciona un cliente");
+		        return;
+		    }
 
-				JOptionPane.showMessageDialog(frame, "Selecciona un cliente");
+		    int idCliente = Integer.parseInt(tablaClientesAsignacion.getValueAt(fila, 0).toString());
+		    Cliente cliente = daoCliente.selectClienteById(idCliente);
+		    Rutina rutina = (Rutina) comboRutinas.getSelectedItem();
 
-				return;
-			}
+		    // Evitar duplicados
+		    if (cliente.getRutinas().contains(rutina)) {
+		        JOptionPane.showMessageDialog(frame, "Este cliente ya tiene esa rutina asignada");
+		        return;
+		    }
 
-			int idCliente = Integer.parseInt(tablaClientesAsignacion.getValueAt(fila, 0).toString());
+		    cliente.getRutinas().add(rutina);
+		    daoCliente.updateCliente(cliente);
 
-			Cliente cliente = daoCliente.selectClienteById(idCliente);
+		    // ENVIAR EMAIL en hilo separado para no bloquear la UI
+		    new Thread(() -> {
+		        EmailService.enviarNotificacionRutina(
+		            cliente.getEmail(),
+		            cliente.getNombre(),
+		            rutina.getNombre()
+		        );
+		    }).start();
 
-			Rutina rutina = (Rutina) comboRutinas.getSelectedItem();
-
-			cliente.getRutinas().add(rutina);
-
-			daoCliente.updateCliente(cliente);
-
-			JOptionPane.showMessageDialog(frame, "Rutina asignada correctamente");
+		    JOptionPane.showMessageDialog(frame,
+		        "Rutina '" + rutina.getNombre() + "' asignada a " + cliente.getNombre()
+		        + "\nEmail enviado a: " + cliente.getEmail());
 		});
 
 		btnAsignarRutina.setBounds(400, 100, 180, 30);
@@ -909,6 +1143,7 @@ public class GestionGimnasio {
 
 							tabbedPaneGYM.setEnabledAt(0, false);
 							tabbedPaneGYM.setEnabledAt(2, false);
+							cargarProgreso(modelProgreso);
 						}
 
 						// ENTRENADOR
@@ -918,6 +1153,11 @@ public class GestionGimnasio {
 
 							tabbedPaneGYM.setEnabledAt(0, false);
 							tabbedPaneGYM.setEnabledAt(1, false);
+							
+							 modelClientesEntrenador.setRowCount(0);
+							    for (Cliente c : daoCliente.selectClientesByEntrenador(cliente.getIdCliente())) {
+							        modelClientesEntrenador.addRow(new Object[]{ c.getIdCliente(), c.getNombre() });
+							    }
 						}
 					} else {
 
@@ -959,7 +1199,6 @@ public class GestionGimnasio {
 
 		comboRolRegistro.addItem("CLIENTE");
 		comboRolRegistro.addItem("ENTRENADOR");
-		comboRolRegistro.addItem("ADMIN");
 
 		comboRolRegistro.setBounds(170, 280, 150, 25);
 

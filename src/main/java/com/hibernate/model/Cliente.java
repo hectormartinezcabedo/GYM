@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import javax.persistence.*;
 
 @Entity
@@ -12,50 +11,51 @@ import javax.persistence.*;
 public class Cliente {
 
 	@Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="idCliente")
-    private int idCliente;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "idCliente")
+	private int idCliente;
 
-    @Column(name="nombre")
-    private String nombre;
-    
-    @Column(name="email")
-    private String email;
-    
-    @Column(name="telefono")
-    private int telefono;
-    
-    @Column(name="fecha_alta")
-    private LocalDate fecha_alta;
-    
-    @Column(name="contraseña")
-    private String contraseña;
-    
-    @Column(name="rol")
-    private String rol;
-    
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "cliente_rutina",
-        joinColumns = @JoinColumn(name = "idCliente"),
-        inverseJoinColumns = @JoinColumn(name = "id_rutina")
-    )
-    
-    
-    
-    private List<Rutina> rutinas = new ArrayList<>();
-    
-    public Cliente() {
-    
-    }
+	@Column(name = "nombre")
+	private String nombre;
 
-    
-    public Cliente(String nombre, String email, int telefono, LocalDate fecha_alta) {
-    	this.nombre = nombre;
-    	this.email = email;
-    	this.telefono = telefono;
-    	this.fecha_alta = fecha_alta;
-    }
+	@Column(name = "email")
+	private String email;
+
+	@Column(name = "telefono")
+	private int telefono;
+
+	@Column(name = "fecha_alta")
+	private LocalDate fecha_alta;
+
+	@Column(name = "contraseña")
+	private String contraseña;
+
+	@Column(name = "rol")
+	private String rol;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "cliente_rutina", joinColumns = @JoinColumn(name = "idCliente"), inverseJoinColumns = @JoinColumn(name = "id_rutina"))
+	private List<Rutina> rutinas = new ArrayList<>();
+	
+	
+	@ManyToOne
+	@JoinColumn(name = "id_entrenador")
+	private Entrenador entrenador;
+
+	
+
+	
+
+	public Cliente() {
+
+	}
+
+	public Cliente(String nombre, String email, int telefono, LocalDate fecha_alta) {
+		this.nombre = nombre;
+		this.email = email;
+		this.telefono = telefono;
+		this.fecha_alta = fecha_alta;
+	}
 
 	public int getIdCliente() {
 		return idCliente;
@@ -92,7 +92,7 @@ public class Cliente {
 	public LocalDate getFecha_alta() {
 		return fecha_alta;
 	}
-	
+
 	public void setFecha_alta(LocalDate fecha_alta) {
 		this.fecha_alta = fecha_alta;
 	}
@@ -100,26 +100,33 @@ public class Cliente {
 	public void setContraseña(String contraseña) {
 		this.contraseña = contraseña;
 	}
-	
+
 	public String getContraseña() {
 		return contraseña;
 	}
 
 	public String getRol() {
-	    return rol;
+		return rol;
 	}
 
 	public void setRol(String rol) {
-	    this.rol = rol;
+		this.rol = rol;
 	}
-	
+
 	public List<Rutina> getRutinas() {
-	    return rutinas;
+		return rutinas;
 	}
 
 	public void setRutinas(List<Rutina> rutinas) {
-	    this.rutinas = rutinas;
+		this.rutinas = rutinas;
 	}
-    
-    
+	
+	public Entrenador getEntrenador() {
+		return entrenador;
+	}
+
+	public void setEntrenador(Entrenador entrenador) {
+		this.entrenador = entrenador;
+	}
+
 }

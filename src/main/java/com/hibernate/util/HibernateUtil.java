@@ -2,6 +2,7 @@ package com.hibernate.util;
 
 import java.util.Properties;
 
+
 import org.hibernate.*;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -13,8 +14,8 @@ import com.hibernate.model.Dificultad;
 import com.hibernate.model.Ejercicio;
 import com.hibernate.model.Entrenador;
 import com.hibernate.model.GrupoMuscular;
+import com.hibernate.model.Progreso;
 import com.hibernate.model.Rutina;
-
 
 
 
@@ -42,6 +43,7 @@ public class HibernateUtil {
 				configuration.addAnnotatedClass(Entrenador.class);
 				configuration.addAnnotatedClass(Rutina.class);
 				configuration.addAnnotatedClass(Dificultad.class);
+				configuration.addAnnotatedClass(Progreso.class);
 				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 						.applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
