@@ -23,6 +23,7 @@ import com.hibernate.model.Cliente;
 import com.hibernate.model.Ejercicio;
 import com.hibernate.model.Entrenador;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
@@ -40,6 +41,7 @@ import javax.swing.JLabel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.UIManager;
 import javax.persistence.*;
@@ -110,20 +112,16 @@ public class GestionGimnasio {
 			textFieldEmail.setText(clienteLogueado.getEmail());
 			textFieldTelefono.setText(String.valueOf(clienteLogueado.getTelefono()));
 			textFieldFechaAlta.setText(clienteLogueado.getFecha_alta().toString());
-			
+
 			if (clienteLogueado.getEntrenador() != null) {
-	            comboEntrenadorCliente.setSelectedItem(clienteLogueado.getEntrenador());
-	        }
+				comboEntrenadorCliente.setSelectedItem(clienteLogueado.getEntrenador());
+			}
 			if (modelRutinas != null) {
-			    modelRutinas.setRowCount(0);
-			    for (Rutina r : clienteLogueado.getRutinas()) {
-			        modelRutinas.addRow(new Object[]{
-			            r.getIdRutina(),
-			            r.getNombre(),
-			            r.getDescripcion(),
-			            r.getDificultad() != null ? r.getDificultad().toString() : "-"
-			        });
-			    }
+				modelRutinas.setRowCount(0);
+				for (Rutina r : clienteLogueado.getRutinas()) {
+					modelRutinas.addRow(new Object[] { r.getIdRutina(), r.getNombre(), r.getDescripcion(),
+							r.getDificultad() != null ? r.getDificultad().toString() : "-" });
+				}
 			}
 		}
 	}
@@ -136,37 +134,59 @@ public class GestionGimnasio {
 
 	public ChartPanel crearGraficoStats() {
 
-		ClienteDAO daoCliente = new ClienteDAO();
-		EntrenadorDAO daoEntrenador = new EntrenadorDAO();
+	    ClienteDAO daoCliente = new ClienteDAO();
+	    EntrenadorDAO daoEntrenador = new EntrenadorDAO();
 
-		int totalClientes = daoCliente.contarClientes();
-		int clientesRecientes = daoCliente.contarClientesRecientes();
-		int totalEntrenadores = daoEntrenador.contarEntrenadores();
+	    int totalClientes = daoCliente.contarClientes();
+	    int clientesRecientes = daoCliente.contarClientesRecientes();
+	    int totalEntrenadores = daoEntrenador.contarEntrenadores();
 
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		dataset.addValue(totalClientes, "Datos", "Clientes");
-		dataset.addValue(clientesRecientes, "Datos", "Últimos 30 días");
-		dataset.addValue(totalEntrenadores, "Datos", "Entrenadores");
+	    dataset.addValue(totalClientes, "Datos", "Clientes");
+	    dataset.addValue(clientesRecientes, "Datos", "Últimos 30 días");
+	    dataset.addValue(totalEntrenadores, "Datos", "Entrenadores");
 
-		JFreeChart chart = ChartFactory.createBarChart("Estadísticas del Gimnasio", "Categoría", "Cantidad", dataset);
-		chart.setBackgroundPaint(Color.white);
+	    JFreeChart chart = ChartFactory.createLineChart(
+	        "Estadísticas del Gimnasio",
+	        "Categoría",
+	        "Cantidad",
+	        dataset
+	    );
 
-		return new ChartPanel(chart);
+	    // FONDO
+	    chart.setBackgroundPaint(Color.white);
+
+	    // FONDO INTERIOR
+	    chart.getCategoryPlot().setBackgroundPaint(new Color(45,45,45));
+
+	    // LINEAS GRID
+	    chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
+
+	    // RENDERER PARA LOS PUNTOS
+	    LineAndShapeRenderer renderer = new LineAndShapeRenderer();
+
+	    // MOSTRAR LINEA
+	    renderer.setSeriesLinesVisible(0, true);
+
+	    // MOSTRAR PUNTOS
+	    renderer.setSeriesShapesVisible(0, true);
+
+	    // APLICAR RENDERER
+	    chart.getCategoryPlot().setRenderer(renderer);
+
+	    return new ChartPanel(chart);
 	}
-	
+
 	void cargarProgreso(DefaultTableModel modelProgreso) {
-	    if (clienteLogueado == null || modelProgreso == null) return;
-	    modelProgreso.setRowCount(0);
-	    ProgresoDAO dao = new ProgresoDAO();
-	    for (Progreso p : dao.selectProgresoByCliente(clienteLogueado.getIdCliente())) {
-	        modelProgreso.addRow(new Object[]{
-	            p.getEjercicio().getNombre(),
-	            p.getPesoUtilizado(),
-	            p.getRepeticiones(),
-	            p.getFecha().toString()
-	        });
-	    }
+		if (clienteLogueado == null || modelProgreso == null)
+			return;
+		modelProgreso.setRowCount(0);
+		ProgresoDAO dao = new ProgresoDAO();
+		for (Progreso p : dao.selectProgresoByCliente(clienteLogueado.getIdCliente())) {
+			modelProgreso.addRow(new Object[] { p.getEjercicio().getNombre(), p.getPesoUtilizado(), p.getRepeticiones(),
+					p.getFecha().toString() });
+		}
 	}
 
 	private JFrame frame;
@@ -247,9 +267,10 @@ public class GestionGimnasio {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 927, 610);
+		frame.setBounds(100, 100, 1200, 900);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		frame.setResizable(false);
 		ClienteDAO daoCliente = new ClienteDAO();
 		EntrenadorDAO daoEntrenador = new EntrenadorDAO();
 		Color primary = new Color(30, 30, 30); // negro
@@ -257,16 +278,16 @@ public class GestionGimnasio {
 		Color danger = new Color(220, 53, 69); // rojo
 
 		JTabbedPane tabbedPaneGYM = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPaneGYM.setBounds(34, 12, 862, 532);
+		tabbedPaneGYM.setBounds(20, 10, 1040, 700);
 		JButton btnLogout = new JButton("Cerrar sesión");
-		btnLogout.setBounds(730, 545, 150, 25);
+		btnLogout.setBounds(862, 780, 150, 30);
 		btnLogout.setVisible(false);
 		frame.getContentPane().add(btnLogout);
 
 		tabbedPaneGYM.setBorder(new CompoundBorder());
 		JLabel lblUsuarioLogueado = new JLabel();
 
-		lblUsuarioLogueado.setBounds(40, 545, 300, 25);
+		lblUsuarioLogueado.setBounds(30, 780, 400, 30);
 
 		frame.getContentPane().add(lblUsuarioLogueado);
 
@@ -395,6 +416,10 @@ public class GestionGimnasio {
 		btnBorrar.setBackground(danger);
 		btnBorrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int confirm = JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar este cliente?",
+						"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+				if (confirm != JOptionPane.YES_OPTION)
+					return;
 				daoCliente.deleteCliente(Integer.parseInt(textField_ID.getText()));
 				JOptionPane.showMessageDialog(null, "Cliente eliminado");
 				modelAdminCliente.setRowCount(0);
@@ -524,15 +549,40 @@ public class GestionGimnasio {
 		lblEspecialidad.setBounds(308, 363, 82, 17);
 		panelGestiónEntrenadores.add(lblEspecialidad);
 
+		JLabel lblPasswordEnt = new JLabel("Contraseña:");
+		lblPasswordEnt.setBounds(308, 396, 82, 17);
+		panelGestiónEntrenadores.add(lblPasswordEnt);
+
+		JPasswordField txtPasswordEnt = new JPasswordField();
+		txtPasswordEnt.setColumns(10);
+		txtPasswordEnt.setBounds(401, 394, 114, 21);
+		panelGestiónEntrenadores.add(txtPasswordEnt);
+
 		JButton btnInsertar_1_1 = new JButton("Insertar");
 		btnInsertar_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				// VALIDACIONES
+				if (textFieldNOMentrenador.getText().trim().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "El nombre es obligatorio");
+					return;
+				}
+				if (new String(txtPasswordEnt.getPassword()).trim().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "La contraseña es obligatoria");
+					return;
+				}
+
+				String hash = BCrypt.hashpw(new String(txtPasswordEnt.getPassword()), BCrypt.gensalt());
+
 				Entrenador ent = new Entrenador();
-				ent.setNombre(textFieldNOMentrenador.getText());
-				ent.setEspecialidad(textFieldEspecialidad.getText());
+				ent.setNombre(textFieldNOMentrenador.getText().trim());
+				ent.setEspecialidad(textFieldEspecialidad.getText().trim());
+				ent.setContraseña(hash);
+				ent.setRol("ENTRENADOR");
 				daoEntrenador.insertEntrenador(ent);
 				modelEntrenador.setRowCount(0);
 				cargarTablaEntrenador(modelEntrenador);
+				txtPasswordEnt.setText("");
 				JOptionPane.showMessageDialog(null, "Entrenador añadido");
 			}
 		});
@@ -570,6 +620,10 @@ public class GestionGimnasio {
 		JButton btnBorrar_1 = new JButton("Borrar");
 		btnBorrar_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				int confirm = JOptionPane.showConfirmDialog(null, "¿Seguro que quieres eliminar este entrenador?",
+						"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+				if (confirm != JOptionPane.YES_OPTION)
+					return;
 				daoEntrenador.deleteEntrenador(Integer.parseInt(textFieldIDentrenador.getText()));
 				JOptionPane.showMessageDialog(null, "Entrenador eliminado");
 				modelEntrenador.setRowCount(0);
@@ -592,7 +646,7 @@ public class GestionGimnasio {
 		modelCliente.addColumn("Fecha Alta");
 
 		JTabbedPane tabbedPane_1 = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane_1.setBounds(0, 0, 922, 537);
+		tabbedPane_1.setBounds(0, 0, 1050, 720);
 		panelCliente.add(tabbedPane_1);
 
 		JPanel panelPerfil = new JPanel();
@@ -619,31 +673,31 @@ public class GestionGimnasio {
 			}
 		});
 
-		textFieldNombre = new JTextField();
-		textFieldNombre.setBounds(413, 340, 114, 21);
-		panelPerfil.add(textFieldNombre);
-		textFieldNombre.setColumns(10);
-
-		textFieldEmail = new JTextField();
-		textFieldEmail.setBounds(413, 307, 114, 21);
-		panelPerfil.add(textFieldEmail);
-		textFieldEmail.setColumns(10);
-
-		textFieldTelefono = new JTextField();
-		textFieldTelefono.setBounds(413, 274, 114, 21);
-		panelPerfil.add(textFieldTelefono);
-		textFieldTelefono.setColumns(10);
-
-		textFieldFechaAlta = new JTextField();
-		textFieldFechaAlta.setBounds(413, 241, 114, 21);
-		panelPerfil.add(textFieldFechaAlta);
-		textFieldFechaAlta.setColumns(10);
-
 		textFieldID = new JTextField();
 		textFieldID.setBounds(413, 208, 114, 21);
-		panelPerfil.add(textFieldID);
 		textFieldID.setEditable(false);
 		textFieldID.setColumns(10);
+		panelPerfil.add(textFieldID);
+
+		textFieldNombre = new JTextField();
+		textFieldNombre.setBounds(413, 241, 114, 21);
+		textFieldNombre.setColumns(10);
+		panelPerfil.add(textFieldNombre);
+
+		textFieldEmail = new JTextField();
+		textFieldEmail.setBounds(413, 274, 114, 21);
+		textFieldEmail.setColumns(10);
+		panelPerfil.add(textFieldEmail);
+
+		textFieldTelefono = new JTextField();
+		textFieldTelefono.setBounds(413, 307, 114, 21);
+		textFieldTelefono.setColumns(10);
+		panelPerfil.add(textFieldTelefono);
+
+		textFieldFechaAlta = new JTextField();
+		textFieldFechaAlta.setBounds(413, 340, 114, 21);
+		textFieldFechaAlta.setColumns(10);
+		panelPerfil.add(textFieldFechaAlta);
 
 		JLabel lblId_1 = new JLabel("ID:");
 		lblId_1.setBounds(330, 212, 60, 17);
@@ -664,7 +718,7 @@ public class GestionGimnasio {
 		JLabel lblFechaAlta_1 = new JLabel("Fecha Alta:");
 		lblFechaAlta_1.setBounds(330, 344, 75, 17);
 		panelPerfil.add(lblFechaAlta_1);
-		
+
 		// --- ASIGNAR ENTRENADOR (panel Perfil del Cliente) ---
 		JLabel lblEntrenadorAsignado = new JLabel("Tu entrenador:");
 		lblEntrenadorAsignado.setBounds(330, 378, 100, 17);
@@ -673,7 +727,7 @@ public class GestionGimnasio {
 		comboEntrenadorCliente = new JComboBox<>();
 		comboEntrenadorCliente.setBounds(413, 375, 180, 25);
 		for (Entrenador ent : daoEntrenador.selectAllEntrenadores()) {
-		    comboEntrenadorCliente.addItem(ent);
+			comboEntrenadorCliente.addItem(ent);
 		}
 		panelPerfil.add(comboEntrenadorCliente);
 
@@ -681,24 +735,24 @@ public class GestionGimnasio {
 		btnAsignarEntrenador.setBackground(new Color(0, 150, 136));
 		btnAsignarEntrenador.setBounds(330, 415, 160, 27);
 		btnAsignarEntrenador.addActionListener(ev -> {
-		    if (clienteLogueado == null) return;
-		    Entrenador entSeleccionado = (Entrenador) comboEntrenadorCliente.getSelectedItem();
-		    clienteLogueado.setEntrenador(entSeleccionado);   
-		    daoCliente.updateCliente(clienteLogueado);
-		    JOptionPane.showMessageDialog(frame,
-		        "Entrenador asignado: " + entSeleccionado.getNombre());
+			if (clienteLogueado == null)
+				return;
+			Entrenador entSeleccionado = (Entrenador) comboEntrenadorCliente.getSelectedItem();
+			clienteLogueado.setEntrenador(entSeleccionado);
+			daoCliente.updateCliente(clienteLogueado);
+			JOptionPane.showMessageDialog(frame, "Entrenador asignado: " + entSeleccionado.getNombre());
 		});
 		panelPerfil.add(btnAsignarEntrenador);
 
-		
-		
 		JPanel panelRutinas = new JPanel();
 		panelRutinas.setLayout(null);
 
 		// --- TABLA RUTINAS ---
 		modelRutinas = new DefaultTableModel() {
-		    @Override
-		    public boolean isCellEditable(int row, int column) { return false; }
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
 		};
 		modelRutinas.addColumn("ID");
 		modelRutinas.addColumn("Nombre");
@@ -707,7 +761,7 @@ public class GestionGimnasio {
 
 		JTable tableRutinas = new JTable(modelRutinas);
 		JScrollPane scrollRutinas = new JScrollPane(tableRutinas);
-		scrollRutinas.setBounds(10, 10, 580, 120);
+		scrollRutinas.setBounds(10, 10, 700, 120);
 		panelRutinas.add(scrollRutinas);
 
 		// --- FILTRO GRUPO MUSCULAR ---
@@ -721,14 +775,16 @@ public class GestionGimnasio {
 		JComboBox<GrupoMuscular> comboGrupo = new JComboBox<>();
 		comboGrupo.setBounds(130, 140, 180, 25);
 		for (GrupoMuscular g : grupoDAO.obtenerTodos()) {
-		    comboGrupo.addItem(g);
+			comboGrupo.addItem(g);
 		}
 		panelRutinas.add(comboGrupo);
 
 		// --- TABLA EJERCICIOS ---
 		modelEjercicios = new DefaultTableModel() {
-		    @Override
-		    public boolean isCellEditable(int row, int column) { return false; }
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
 		};
 		modelEjercicios.addColumn("ID");
 		modelEjercicios.addColumn("Nombre");
@@ -736,62 +792,78 @@ public class GestionGimnasio {
 
 		JTable tableEjercicios = new JTable(modelEjercicios);
 		JScrollPane scrollEjercicios = new JScrollPane(tableEjercicios);
-		scrollEjercicios.setBounds(10, 175, 380, 120);
+		scrollEjercicios.setBounds(10, 180, 400, 140);
 		panelRutinas.add(scrollEjercicios);
 
-		// --- GIF EJERCICIO ---
-		JLabel lblGif = new JLabel();
-		lblGif.setBounds(400, 140, 200, 160);
-		lblGif.setBorder(javax.swing.BorderFactory.createLineBorder(Color.GRAY));
-		panelRutinas.add(lblGif);
+		// PANEL GIF
+		JPanel panelGif = new JPanel();
+		panelGif.setLayout(null);
+		panelGif.setBounds(430, 170, 300, 220);
+		panelGif.setBackground(new Color(35,35,35));
+		panelGif.setBorder(BorderFactory.createLineBorder(new Color(80,80,80), 2));
 
-		// --- AL SELECCIONAR EJERCICIO MUESTRA GIF ---
+		panelRutinas.add(panelGif);
+
+		// LABEL GIF
+		JLabel lblGif = new JLabel();
+		lblGif.setBounds(10, 10, 240, 190);
+		lblGif.setHorizontalAlignment(JLabel.CENTER);
+		lblGif.setVerticalAlignment(JLabel.CENTER);
+
+		panelGif.add(lblGif);
+
+		// AL SELECCIONAR EJERCICIO MUESTRA GIF
 		tableEjercicios.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		        int fila = tableEjercicios.getSelectedRow();
-		        if (fila == -1) return;
-		        // Buscar ejercicio seleccionado
-		        int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(fila, 0).toString());
-		        List<Ejercicio> todos = ejercicioDAO.selectAll();
-		        for (Ejercicio ej : todos) {
-		            if (ej.getIdEjercicio() == idEjercicio) {
-		                String ruta = ej.getVideo();
-		                ImageIcon gif = new ImageIcon(ruta);
-		                Image img = gif.getImage().getScaledInstance(200, 160, Image.SCALE_DEFAULT);
-		                lblGif.setIcon(new ImageIcon(img));
-		                break;
-		            }
-		        }
-		    }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int fila = tableEjercicios.getSelectedRow();
+				if (fila == -1)
+					return;
+				// Buscar ejercicio seleccionado
+				int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(fila, 0).toString());
+				List<Ejercicio> todos = ejercicioDAO.selectAll();
+				for (Ejercicio ej : todos) {
+					if (ej.getIdEjercicio() == idEjercicio) {
+						try {
+							String ruta = ej.getVideo();
+							ImageIcon gif = new ImageIcon(getClass().getResource(ruta));
+							lblGif.setIcon(gif);
+							lblGif.revalidate();
+							lblGif.repaint();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							lblGif.setText("GIF no encontrado");
+						}
+						break;
+					}
+				}
+			}
 		});
 
 		// --- FILTRAR EJERCICIOS POR GRUPO ---
 		JButton btnFiltrar = new JButton("Filtrar");
 		btnFiltrar.setBounds(320, 140, 80, 25);
 		btnFiltrar.addActionListener(ev -> {
-		    GrupoMuscular grupoSel = (GrupoMuscular) comboGrupo.getSelectedItem();
-		    modelEjercicios.setRowCount(0);
-		    lblGif.setIcon(null);
-		    for (Ejercicio ej : ejercicioDAO.selectByGrupoMuscular(grupoSel.getId_grupo_muscular())) {
-		        modelEjercicios.addRow(new Object[]{
-		            ej.getIdEjercicio(),
-		            ej.getNombre(),
-		            ej.getDescripcion()
-		        });
-		    }
+			GrupoMuscular grupoSel = (GrupoMuscular) comboGrupo.getSelectedItem();
+			modelEjercicios.setRowCount(0);
+			lblGif.setIcon(null);
+			for (Ejercicio ej : ejercicioDAO.selectByGrupoMuscular(grupoSel.getId_grupo_muscular())) {
+				modelEjercicios.addRow(new Object[] { ej.getIdEjercicio(), ej.getNombre(), ej.getDescripcion() });
+			}
 		});
 		panelRutinas.add(btnFiltrar);
 
 		// --- PANEL PROGRESO ---
 		JLabel lblTituloProgreso = new JLabel("Mi Progreso:");
 		lblTituloProgreso.setFont(new Font("Segoe UI", Font.BOLD, 13));
-		lblTituloProgreso.setBounds(10, 305, 120, 25);
+		lblTituloProgreso.setBounds(10, 332, 120, 25);
 		panelRutinas.add(lblTituloProgreso);
 
 		modelProgreso = new DefaultTableModel() {
-		    @Override
-		    public boolean isCellEditable(int row, int column) { return false; }
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
 		};
 		modelProgreso.addColumn("Ejercicio");
 		modelProgreso.addColumn("Peso (kg)");
@@ -800,95 +872,208 @@ public class GestionGimnasio {
 
 		JTable tableProgreso = new JTable(modelProgreso);
 		JScrollPane scrollProgreso = new JScrollPane(tableProgreso);
-		scrollProgreso.setBounds(10, 330, 380, 100);
+		scrollProgreso.setBounds(10, 364, 400, 105);
 		panelRutinas.add(scrollProgreso);
 
-		// --- REGISTRO PROGRESO ---
-		JLabel lblPeso = new JLabel("Peso:");
-		lblPeso.setBounds(400, 310, 40, 25);
-		panelRutinas.add(lblPeso);
+		// --- GRÁFICO EVOLUCIÓN PROGRESO ---
+		JLabel lblGrafico = new JLabel("Evolución (selecciona ejercicio y pulsa Ver):");
+		lblGrafico.setBounds(10, 481, 300, 20);
+		panelRutinas.add(lblGrafico);
 
-		JTextField txtPeso = new JTextField();
-		txtPeso.setBounds(440, 310, 60, 25);
-		panelRutinas.add(txtPeso);
+		JPanel panelGrafico = new JPanel(new BorderLayout());
+		panelGrafico.setBounds(10, 508, 700, 172);
+		panelRutinas.add(panelGrafico);
 
-		JLabel lblReps = new JLabel("Reps:");
-		lblReps.setBounds(510, 310, 40, 25);
-		panelRutinas.add(lblReps);
+		JButton btnVerEvolucion = new JButton("Ver evolución");
+		btnVerEvolucion.setBounds(267, 479, 150, 25);
+		btnVerEvolucion.setBackground(new Color(100, 149, 237));
+		btnVerEvolucion.addActionListener(ev -> {
 
-		JTextField txtReps = new JTextField();
-		txtReps.setBounds(550, 310, 50, 25);
-		panelRutinas.add(txtReps);
-
-		JButton btnGuardarProgreso = new JButton("Guardar progreso");
-		btnGuardarProgreso.setBackground(new Color(0, 150, 136));
-		btnGuardarProgreso.setBounds(400, 345, 160, 27);
-		btnGuardarProgreso.addActionListener(ev -> {
-
-		    // VALIDACIONES
-		    if (clienteLogueado == null) {
-		        JOptionPane.showMessageDialog(frame, "No hay cliente logueado");
-		        return;
-		    }
 		    int filaEj = tableEjercicios.getSelectedRow();
+
 		    if (filaEj == -1) {
 		        JOptionPane.showMessageDialog(frame, "Selecciona un ejercicio");
 		        return;
 		    }
-		    if (txtPeso.getText().trim().isEmpty()) {
-		        JOptionPane.showMessageDialog(frame, "Introduce el peso");
+
+		    int idEjercicio = Integer.parseInt(
+		            modelEjercicios.getValueAt(filaEj, 0).toString());
+
+		    String nombreEjercicio =
+		            modelEjercicios.getValueAt(filaEj, 1).toString();
+
+		    ProgresoDAO progresoDAO = new ProgresoDAO();
+
+		    List<Progreso> historial =
+		            progresoDAO.selectProgresoByClienteYEjercicio(
+		                    clienteLogueado.getIdCliente(),
+		                    idEjercicio);
+
+		    if (historial.isEmpty()) {
+		        JOptionPane.showMessageDialog(frame,
+		                "No hay progreso aún");
 		        return;
 		    }
-		    if (txtReps.getText().trim().isEmpty()) {
-		        JOptionPane.showMessageDialog(frame, "Introduce las repeticiones");
-		        return;
+
+		    DefaultCategoryDataset dataset =
+		            new DefaultCategoryDataset();
+
+		    for (Progreso p : historial) {
+
+		        dataset.addValue(
+		                p.getPesoUtilizado(),
+		                "Peso",
+		                p.getFecha().toString());
 		    }
 
-		    try {
-		        double peso = Double.parseDouble(txtPeso.getText().trim());
-		        int reps = Integer.parseInt(txtReps.getText().trim());
+		    JFreeChart chart = ChartFactory.createLineChart(
+		            "Evolución - " + nombreEjercicio,
+		            "Fecha",
+		            "Peso (kg)",
+		            dataset);
 
-		        if (peso <= 0 || reps <= 0) {
-		            JOptionPane.showMessageDialog(frame, "Peso y repeticiones deben ser mayores que 0");
-		            return;
-		        }
+		    // FONDO GENERAL
+		    chart.setBackgroundPaint(new Color(30,30,30));
 
-		        int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(filaEj, 0).toString());
-		        Ejercicio ejercicioSel = null;
-		        for (Ejercicio ej : ejercicioDAO.selectAll()) {
-		            if (ej.getIdEjercicio() == idEjercicio) {
-		                ejercicioSel = ej;
-		                break;
-		            }
-		        }
+		    // PLOT
+		    chart.getCategoryPlot().setBackgroundPaint(
+		            new Color(45,45,45));
 
-		        ProgresoDAO progresoDAO = new ProgresoDAO();
-		        Progreso p = new Progreso();
-		        p.setCliente(clienteLogueado);
-		        p.setEjercicio(ejercicioSel);
-		        p.setPesoUtilizado(peso);
-		        p.setRepeticiones(reps);
-		        p.setFecha(LocalDate.now());
-		        progresoDAO.insertProgreso(p);
+		    // GRID
+		    chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
 
-		        // Recargar tabla progreso
-		        cargarProgreso(modelProgreso);
+		    // TEXTO
+		    chart.getTitle().setPaint(Color.WHITE);
 
-		        txtPeso.setText("");
-		        txtReps.setText("");
-		        JOptionPane.showMessageDialog(frame, "Progreso guardado");
+		    chart.getCategoryPlot().getDomainAxis()
+		            .setTickLabelPaint(Color.WHITE);
 
-		    } catch (NumberFormatException ex) {
-		        JOptionPane.showMessageDialog(frame, "Peso y repeticiones deben ser números válidos");
-		    }
+		    chart.getCategoryPlot().getRangeAxis()
+		            .setTickLabelPaint(Color.WHITE);
+
+		    chart.getCategoryPlot().getDomainAxis()
+		            .setLabelPaint(Color.WHITE);
+
+		    chart.getCategoryPlot().getRangeAxis()
+		            .setLabelPaint(Color.WHITE);
+
+		    // RENDERER
+		    LineAndShapeRenderer renderer =
+		            new LineAndShapeRenderer();
+
+		    // LINEA VISIBLE
+		    renderer.setSeriesLinesVisible(0, true);
+
+		    // PUNTOS VISIBLES
+		    renderer.setSeriesShapesVisible(0, true);
+
+		    // NUMEROS ENCIMA
+		    renderer.setDefaultItemLabelsVisible(true);
+
+		    chart.getCategoryPlot().setRenderer(renderer);
+
+		    panelGrafico.removeAll();
+
+		    ChartPanel cp = new ChartPanel(chart);
+
+		    panelGrafico.add(cp, BorderLayout.CENTER);
+
+		    panelGrafico.revalidate();
+		    panelGrafico.repaint();
+		});
+		panelRutinas.add(btnVerEvolucion);
+
+		// LABEL PESO
+		JLabel lblPeso = new JLabel("Peso (kg)");
+		lblPeso.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		lblPeso.setBounds(440, 392, 80, 20);
+		panelRutinas.add(lblPeso);
+
+		// TEXTFIELD PESO
+		JTextField txtPeso = new JTextField();
+		txtPeso.setBounds(430, 410, 100, 35);
+		txtPeso.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelRutinas.add(txtPeso);
+
+		// LABEL REPS
+		JLabel lblReps = new JLabel("Repeticiones");
+		lblReps.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		lblReps.setBounds(570, 392, 100, 20);
+		panelRutinas.add(lblReps);
+
+		// TEXTFIELD REPS
+		JTextField txtReps = new JTextField();
+		txtReps.setBounds(560, 410, 100, 35);
+		txtReps.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		panelRutinas.add(txtReps);
+
+		JButton btnGuardarProgreso = new JButton("Guardar progreso");
+		btnGuardarProgreso.setBackground(new Color(0, 150, 136));
+		btnGuardarProgreso.setBounds(467, 453, 160, 35);
+		btnGuardarProgreso.setFont(new Font("Segoe UI", Font.BOLD, 13));
+		btnGuardarProgreso.addActionListener(ev -> {
+
+			// VALIDACIONES
+			if (clienteLogueado == null) {
+				JOptionPane.showMessageDialog(frame, "No hay cliente logueado");
+				return;
+			}
+			int filaEj = tableEjercicios.getSelectedRow();
+			if (filaEj == -1) {
+				JOptionPane.showMessageDialog(frame, "Selecciona un ejercicio");
+				return;
+			}
+			if (txtPeso.getText().trim().isEmpty()) {
+				JOptionPane.showMessageDialog(frame, "Introduce el peso");
+				return;
+			}
+			if (txtReps.getText().trim().isEmpty()) {
+				JOptionPane.showMessageDialog(frame, "Introduce las repeticiones");
+				return;
+			}
+
+			try {
+				double peso = Double.parseDouble(txtPeso.getText().trim());
+				int reps = Integer.parseInt(txtReps.getText().trim());
+
+				if (peso <= 0 || reps <= 0) {
+					JOptionPane.showMessageDialog(frame, "Peso y repeticiones deben ser mayores que 0");
+					return;
+				}
+
+				int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(filaEj, 0).toString());
+				Ejercicio ejercicioSel = null;
+				for (Ejercicio ej : ejercicioDAO.selectAll()) {
+					if (ej.getIdEjercicio() == idEjercicio) {
+						ejercicioSel = ej;
+						break;
+					}
+				}
+
+				ProgresoDAO progresoDAO = new ProgresoDAO();
+				Progreso p = new Progreso();
+				p.setCliente(clienteLogueado);
+				p.setEjercicio(ejercicioSel);
+				p.setPesoUtilizado(peso);
+				p.setRepeticiones(reps);
+				p.setFecha(LocalDate.now());
+				progresoDAO.insertProgreso(p);
+
+				// Recargar tabla progreso
+				cargarProgreso(modelProgreso);
+
+				txtPeso.setText("");
+				txtReps.setText("");
+				JOptionPane.showMessageDialog(frame, "Progreso guardado");
+
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(frame, "Peso y repeticiones deben ser números válidos");
+			}
 		});
 		panelRutinas.add(btnGuardarProgreso);
 
 		tabbedPane_1.addTab("Rutinas", null, panelRutinas, null);
-		
-		
-		
-		
+
 		frame.getContentPane().add(tabbedPaneGYM);
 		tabbedPaneGYM.setVisible(false);
 
@@ -909,8 +1094,6 @@ public class GestionGimnasio {
 
 		modelClientesEntrenador.addColumn("ID");
 		modelClientesEntrenador.addColumn("Nombre");
-
-		
 
 		JTable tablaClientesAsignacion = new JTable(modelClientesEntrenador);
 
@@ -944,38 +1127,35 @@ public class GestionGimnasio {
 		JButton btnAsignarRutina = new JButton("Asignar Rutina");
 		btnAsignarRutina.addActionListener(e -> {
 
-		    int fila = tablaClientesAsignacion.getSelectedRow();
+			int fila = tablaClientesAsignacion.getSelectedRow();
 
-		    if (fila == -1) {
-		        JOptionPane.showMessageDialog(frame, "Selecciona un cliente");
-		        return;
-		    }
+			if (fila == -1) {
+				JOptionPane.showMessageDialog(frame, "Selecciona un cliente");
+				return;
+			}
 
-		    int idCliente = Integer.parseInt(tablaClientesAsignacion.getValueAt(fila, 0).toString());
-		    Cliente cliente = daoCliente.selectClienteById(idCliente);
-		    Rutina rutina = (Rutina) comboRutinas.getSelectedItem();
+			int idCliente = Integer.parseInt(tablaClientesAsignacion.getValueAt(fila, 0).toString());
+			Cliente cliente = daoCliente.selectClienteById(idCliente);
+			Rutina rutina = (Rutina) comboRutinas.getSelectedItem();
 
-		    // Evitar duplicados
-		    if (cliente.getRutinas().contains(rutina)) {
-		        JOptionPane.showMessageDialog(frame, "Este cliente ya tiene esa rutina asignada");
-		        return;
-		    }
+			// Evitar duplicados comprobando por ID
+			boolean yaAsignada = cliente.getRutinas().stream().anyMatch(r -> r.getIdRutina() == rutina.getIdRutina());
 
-		    cliente.getRutinas().add(rutina);
-		    daoCliente.updateCliente(cliente);
+			if (yaAsignada) {
+				JOptionPane.showMessageDialog(frame, "Este cliente ya tiene esa rutina asignada");
+				return;
+			}
 
-		    // ENVIAR EMAIL en hilo separado para no bloquear la UI
-		    new Thread(() -> {
-		        EmailService.enviarNotificacionRutina(
-		            cliente.getEmail(),
-		            cliente.getNombre(),
-		            rutina.getNombre()
-		        );
-		    }).start();
+			cliente.getRutinas().add(rutina);
+			daoCliente.updateCliente(cliente);
 
-		    JOptionPane.showMessageDialog(frame,
-		        "Rutina '" + rutina.getNombre() + "' asignada a " + cliente.getNombre()
-		        + "\nEmail enviado a: " + cliente.getEmail());
+			// ENVIAR EMAIL en hilo separado para no bloquear la UI
+			new Thread(() -> {
+				EmailService.enviarNotificacionRutina(cliente.getEmail(), cliente.getNombre(), rutina.getNombre());
+			}).start();
+
+			JOptionPane.showMessageDialog(frame, "Rutina '" + rutina.getNombre() + "' asignada a " + cliente.getNombre()
+					+ "\nEmail enviado a: " + cliente.getEmail());
 		});
 
 		btnAsignarRutina.setBounds(400, 100, 180, 30);
@@ -1024,7 +1204,6 @@ public class GestionGimnasio {
 		panelLogin.add(textFieldUsuario);
 		textFieldUsuario.setColumns(10);
 
-	
 		JButton btnVerPassword = new JButton("");
 
 		btnVerPassword.setIcon(cargarIcono("img/7609770.png"));
@@ -1050,7 +1229,7 @@ public class GestionGimnasio {
 		textFieldContraseña.setBounds(194, 222, 114, 21);
 		panelLogin.add(textFieldContraseña);
 		textFieldContraseña.setColumns(10);
-		
+
 		JLabel lblRolLogin = new JLabel("Rol:");
 		lblRolLogin.setBounds(125, 275, 60, 17);
 
@@ -1080,6 +1259,48 @@ public class GestionGimnasio {
 
 				try {
 
+					String rolSeleccionadoLogin = comboRolLogin.getSelectedItem().toString();
+
+					if (rolSeleccionadoLogin.equalsIgnoreCase("ENTRENADOR")) {
+
+						// BUSCAR EN TABLA ENTRENADOR
+						Entrenador entrenador = daoEntrenador.selectEntrenadorByNombre(textFieldUsuario.getText());
+
+						if (entrenador == null) {
+							JOptionPane.showMessageDialog(frame, "Entrenador no existe");
+							return;
+						}
+
+						if (entrenador.getContraseña() == null) {
+							JOptionPane.showMessageDialog(frame, "Este entrenador no tiene contraseña asignada");
+							return;
+						}
+
+						boolean esCorrecta = BCrypt.checkpw(textFieldContraseña.getText(), entrenador.getContraseña());
+
+						if (esCorrecta) {
+							JOptionPane.showMessageDialog(frame, "Bienvenido " + entrenador.getNombre());
+							tabbedPaneLogin.setVisible(false);
+							tabbedPaneGYM.setVisible(true);
+							btnLogout.setVisible(true);
+							lblUsuarioLogueado.setText("Bienvenido " + entrenador.getNombre() + " (ENTRENADOR)");
+							tabbedPaneGYM.setEnabledAt(0, true);
+							tabbedPaneGYM.setEnabledAt(1, true);
+							tabbedPaneGYM.setEnabledAt(2, true);
+							tabbedPaneGYM.setSelectedIndex(2);
+							tabbedPaneGYM.setEnabledAt(0, false);
+							tabbedPaneGYM.setEnabledAt(1, false);
+							modelClientesEntrenador.setRowCount(0);
+							for (Cliente c : daoCliente.selectClientesByEntrenador(entrenador.getIdEntrenador())) {
+								modelClientesEntrenador.addRow(new Object[] { c.getIdCliente(), c.getNombre() });
+							}
+						} else {
+							JOptionPane.showMessageDialog(frame, "Contraseña incorrecta");
+						}
+						return;
+					}
+
+					// BUSCAR EN TABLA CLIENTE (ADMIN o CLIENTE)
 					Cliente cliente = daoCliente.selectClienteByNombre(textFieldUsuario.getText());
 
 					if (cliente == null) {
@@ -1093,19 +1314,16 @@ public class GestionGimnasio {
 
 						String rol = cliente.getRol();
 
-						String rolSeleccionado =
-							comboRolLogin.getSelectedItem().toString();
+						String rolSeleccionado = comboRolLogin.getSelectedItem().toString();
 
 						if (!rol.equalsIgnoreCase(rolSeleccionado)) {
 
-							JOptionPane.showMessageDialog(frame,
-								"El usuario no pertenece al rol seleccionado");
+							JOptionPane.showMessageDialog(frame, "El usuario no pertenece al rol seleccionado");
 
 							return;
 						}
 
-						JOptionPane.showMessageDialog(frame,
-							"Bienvenido " + cliente.getNombre());
+						JOptionPane.showMessageDialog(frame, "Bienvenido " + cliente.getNombre());
 
 						tabbedPaneLogin.setVisible(false);
 
@@ -1117,10 +1335,7 @@ public class GestionGimnasio {
 
 						cargarPerfilCliente(modelCliente);
 
-						lblUsuarioLogueado.setText(
-							"Bienvenido " + cliente.getNombre()
-							+ " (" + cliente.getRol() + ")"
-						);
+						lblUsuarioLogueado.setText("Bienvenido " + cliente.getNombre() + " (" + cliente.getRol() + ")");
 
 						// REACTIVAR TODO
 						tabbedPaneGYM.setEnabledAt(0, true);
@@ -1153,11 +1368,11 @@ public class GestionGimnasio {
 
 							tabbedPaneGYM.setEnabledAt(0, false);
 							tabbedPaneGYM.setEnabledAt(1, false);
-							
-							 modelClientesEntrenador.setRowCount(0);
-							    for (Cliente c : daoCliente.selectClientesByEntrenador(cliente.getIdCliente())) {
-							        modelClientesEntrenador.addRow(new Object[]{ c.getIdCliente(), c.getNombre() });
-							    }
+
+							modelClientesEntrenador.setRowCount(0);
+							for (Cliente c : daoCliente.selectClientesByEntrenador(cliente.getIdCliente())) {
+								modelClientesEntrenador.addRow(new Object[] { c.getIdCliente(), c.getNombre() });
+							}
 						}
 					} else {
 
@@ -1190,7 +1405,7 @@ public class GestionGimnasio {
 
 		JPasswordField txtPasswordRegistro = new JPasswordField();
 		txtPasswordRegistro.setBounds(170, 230, 150, 25);
-		
+
 		JLabel lblRol = new JLabel("Rol");
 		lblRol.setBounds(90, 280, 80, 25);
 		panelRegister.add(lblRol);
@@ -1198,12 +1413,11 @@ public class GestionGimnasio {
 		JComboBox<String> comboRolRegistro = new JComboBox<>();
 
 		comboRolRegistro.addItem("CLIENTE");
-		comboRolRegistro.addItem("ENTRENADOR");
 
 		comboRolRegistro.setBounds(170, 280, 150, 25);
 
 		panelRegister.add(comboRolRegistro);
-	
+
 		JButton btnVerPasswordRegistro = new JButton("");
 
 		btnVerPasswordRegistro.setIcon(cargarIcono("img/7609770.png"));

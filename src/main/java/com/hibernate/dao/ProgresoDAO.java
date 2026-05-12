@@ -26,4 +26,17 @@ public class ProgresoDAO {
         session.close();
         return lista;
     }
+    
+    public List<Progreso> selectProgresoByClienteYEjercicio(int idCliente, int idEjercicio) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Progreso> lista = session.createQuery(
+            "FROM Progreso p WHERE p.cliente.idCliente = :idCliente " +
+            "AND p.ejercicio.idEjercicio = :idEjercicio ORDER BY p.fecha ASC",
+            Progreso.class)
+            .setParameter("idCliente", idCliente)
+            .setParameter("idEjercicio", idEjercicio)
+            .getResultList();
+        session.close();
+        return lista;
+    }
 }

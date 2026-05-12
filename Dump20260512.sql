@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `gimnasio` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `gimnasio`;
--- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.46, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: gimnasio
 -- ------------------------------------------------------
--- Server version	8.0.45-0ubuntu0.24.04.1
+-- Server version	8.4.8-0ubuntu1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -32,8 +32,11 @@ CREATE TABLE `cliente` (
   `fecha_alta` varchar(255) DEFAULT NULL,
   `contraseña` varchar(255) NOT NULL,
   `rol` varchar(20) NOT NULL,
-  PRIMARY KEY (`idCliente`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id_entrenador` int DEFAULT NULL,
+  PRIMARY KEY (`idCliente`),
+  KEY `FKhmcv2cjxwiohqpc61c74j1c08` (`id_entrenador`),
+  CONSTRAINT `FKhmcv2cjxwiohqpc61c74j1c08` FOREIGN KEY (`id_entrenador`) REFERENCES `entrenador` (`idEntrenador`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +45,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN'),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$8ryxqzw8IsguTJoDS33yZuuIxO/Rxt4F1XSoMurmD/Jb.sWd4hx1.','CLIENTE'),(4,'hector','hector@gmail.com',644021507,'2026-05-08','$2a$10$seJM2WDUvRHpQjatQOqbou.Q5.3917X6W.hsU11dXOthvBT0qiE5W','CLIENTE');
+INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN',NULL),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$8ryxqzw8IsguTJoDS33yZuuIxO/Rxt4F1XSoMurmD/Jb.sWd4hx1.','CLIENTE',NULL),(4,'hector','hectormartinezcabedo@gmail.com',644021507,'2026-05-08','$2a$10$seJM2WDUvRHpQjatQOqbou.Q5.3917X6W.hsU11dXOthvBT0qiE5W','CLIENTE',1);
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,13 +84,10 @@ CREATE TABLE `cliente_rutina` (
   `fecha_inicio` date DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
   `observaciones` text,
-  `idCliente` int NOT NULL,
   PRIMARY KEY (`id_cliente`,`id_rutina`),
   KEY `id_rutina` (`id_rutina`),
-  KEY `FKb6cwbcvgstbop2jcigs8j80bl` (`idCliente`),
   CONSTRAINT `cliente_rutina_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`idCliente`) ON DELETE CASCADE,
-  CONSTRAINT `cliente_rutina_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE,
-  CONSTRAINT `FKb6cwbcvgstbop2jcigs8j80bl` FOREIGN KEY (`idCliente`) REFERENCES `cliente` (`idCliente`)
+  CONSTRAINT `cliente_rutina_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `rutina` (`id_rutina`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -97,6 +97,7 @@ CREATE TABLE `cliente_rutina` (
 
 LOCK TABLES `cliente_rutina` WRITE;
 /*!40000 ALTER TABLE `cliente_rutina` DISABLE KEYS */;
+INSERT INTO `cliente_rutina` VALUES (4,1,NULL,NULL,NULL),(4,2,NULL,NULL,NULL),(4,3,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `cliente_rutina` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -149,7 +150,7 @@ CREATE TABLE `ejercicio` (
 
 LOCK TABLES `ejercicio` WRITE;
 /*!40000 ALTER TABLE `ejercicio` DISABLE KEYS */;
-INSERT INTO `ejercicio` VALUES (1,'Press banca','Ejercicio de pecho','https://fitcron.com/wp-content/uploads/2021/03/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',1),(2,'Dominadas','Ejercicio de espalda','https://fitcron.com/wp-content/uploads/2021/04/18661301-Wide-Grip-Pull-Up-on-Dip-Cage_Back_720.gif',2),(3,'Sentadillas','Ejercicio de piernas','https://fitcron.com/wp-content/uploads/2021/04/00431301-Barbell-Full-Squat_Thighs_720.gif',3),(4,'Curl bíceps','Ejercicio de brazos','https://homeworkouts.org/wp-content/uploads/anim-dumbbell-bicep-curls.gif',4);
+INSERT INTO `ejercicio` VALUES (1,'Press banca','Ejercicio de pecho','img/ejercicios/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',1),(2,'Dominadas','Ejercicio de espalda','img/ejercicios/18661301-Wide-Grip-Pull-Up-on-Dip-Cage_Back_720.gif',2),(3,'Sentadillas','Ejercicio de piernas','img/ejercicios/00431301-Barbell-Full-Squat_Thighs_720.gif',3),(4,'Curl bíceps','Ejercicio de brazos','img/ejercicios/anim-dumbbell-bicep-curls.gif',4);
 /*!40000 ALTER TABLE `ejercicio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -164,6 +165,8 @@ CREATE TABLE `entrenador` (
   `idEntrenador` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) NOT NULL,
   `especialidad` varchar(255) DEFAULT NULL,
+  `contraseña` varchar(255) DEFAULT NULL,
+  `rol` varchar(20) DEFAULT 'ENTRENADOR',
   PRIMARY KEY (`idEntrenador`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -174,7 +177,7 @@ CREATE TABLE `entrenador` (
 
 LOCK TABLES `entrenador` WRITE;
 /*!40000 ALTER TABLE `entrenador` DISABLE KEYS */;
-INSERT INTO `entrenador` VALUES (1,'Carlos',''),(2,'Ana',''),(3,'Luis','');
+INSERT INTO `entrenador` VALUES (1,'Carlos','','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR'),(2,'Ana','','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR'),(3,'Luis','','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR');
 /*!40000 ALTER TABLE `entrenador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -290,7 +293,7 @@ CREATE TABLE `hibernate_sequence` (
 
 LOCK TABLES `hibernate_sequence` WRITE;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
-INSERT INTO `hibernate_sequence` VALUES (5);
+INSERT INTO `hibernate_sequence` VALUES (6);
 /*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -313,7 +316,7 @@ CREATE TABLE `progreso` (
   KEY `id_ejercicio` (`id_ejercicio`),
   CONSTRAINT `progreso_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`idCliente`) ON DELETE CASCADE,
   CONSTRAINT `progreso_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `ejercicio` (`idEjercicio`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -322,6 +325,7 @@ CREATE TABLE `progreso` (
 
 LOCK TABLES `progreso` WRITE;
 /*!40000 ALTER TABLE `progreso` DISABLE KEYS */;
+INSERT INTO `progreso` VALUES (5,4,1,70,10,'2026-05-12'),(6,4,1,90,4,'2026-05-12'),(7,4,2,40,20,'2026-05-12');
 /*!40000 ALTER TABLE `progreso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,4 +399,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-08 17:14:51
+-- Dump completed on 2026-05-12 13:30:46

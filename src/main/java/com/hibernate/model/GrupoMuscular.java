@@ -50,6 +50,9 @@ public class GrupoMuscular {
 			this.descripcion = descripcion;
 		}
 	    
-	    
+		@Override
+		public String toString() {
+		    return nombre;
+		}
 
 }

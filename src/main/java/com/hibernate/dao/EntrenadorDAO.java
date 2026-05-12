@@ -91,5 +91,15 @@ public class EntrenadorDAO{
 	    session.close();
 	    return total.intValue();
 	}
+	
+	public Entrenador selectEntrenadorByNombre(String nombre) {
+	    Session session = HibernateUtil.getSessionFactory().openSession();
+	    List<Entrenador> lista = session.createQuery(
+	        "FROM Entrenador e WHERE e.nombre = :nombre", Entrenador.class)
+	        .setParameter("nombre", nombre)
+	        .getResultList();
+	    session.close();
+	    return lista.isEmpty() ? null : lista.get(0);
+	}
     
 }

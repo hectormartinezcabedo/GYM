@@ -34,7 +34,11 @@ public class Cliente {
 	private String rol;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "cliente_rutina", joinColumns = @JoinColumn(name = "idCliente"), inverseJoinColumns = @JoinColumn(name = "id_rutina"))
+	@JoinTable(
+	    name = "cliente_rutina",
+	    joinColumns = @JoinColumn(name = "id_cliente"),
+	    inverseJoinColumns = @JoinColumn(name = "id_rutina")
+	)
 	private List<Rutina> rutinas = new ArrayList<>();
 	
 	

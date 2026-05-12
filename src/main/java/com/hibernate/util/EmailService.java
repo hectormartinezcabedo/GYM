@@ -7,7 +7,7 @@ import javax.mail.internet.*;
 public class EmailService {
 
     private static final String REMITENTE = "hecmartinez555@gmail.com";
-    private static final String PASSWORD   = "26032007Hh_";
+    private static final String PASSWORD   = "aeqj wyar cwmk rzjm";
 
     public static void enviarNotificacionRutina(String destinatario,
                                                  String nombreCliente,

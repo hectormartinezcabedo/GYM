@@ -20,6 +20,12 @@ public class Entrenador {
     @Column(name="especialidad")
     private String especialidad;
     
+    @Column(name = "contraseña")
+    private String contraseña;
+
+    @Column(name = "rol")
+    private String rol;
+    
     public Entrenador() {
     	
     }
@@ -52,8 +58,27 @@ public class Entrenador {
 	public void setEspecialidad(String especialidad) {
 		this.especialidad = especialidad;
 	}
-
 	
+	public String getContraseña() {
+		return contraseña;
+	}
+	
+	public void setContraseña(String contraseña) {
+		this.contraseña = contraseña;
+	}
+	
+	public String getRol() {
+		return rol;
+	}
+	
+	public void setRol(String rol) {
+		this.rol = rol;
+	}
+
+	@Override
+	public String toString() {
+	    return nombre;
+	}
 
     
 }

@@ -15,5 +15,9 @@ public class Dificultad {
 	    
 	    @Column(name = "nombre")
 	    private String nombre;
-	
+	    	
+	    @Override
+	    public String toString() {
+	        return nombre;
+	    }
 }
