@@ -22,7 +22,7 @@ import com.hibernate.dao.EntrenadorDAO;
 import com.hibernate.model.Cliente;
 import com.hibernate.model.Ejercicio;
 import com.hibernate.model.Entrenador;
-
+import java.util.regex.PatternSyntaxException;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -134,48 +134,43 @@ public class GestionGimnasio {
 
 	public ChartPanel crearGraficoStats() {
 
-	    ClienteDAO daoCliente = new ClienteDAO();
-	    EntrenadorDAO daoEntrenador = new EntrenadorDAO();
+		ClienteDAO daoCliente = new ClienteDAO();
+		EntrenadorDAO daoEntrenador = new EntrenadorDAO();
 
-	    int totalClientes = daoCliente.contarClientes();
-	    int clientesRecientes = daoCliente.contarClientesRecientes();
-	    int totalEntrenadores = daoEntrenador.contarEntrenadores();
+		int totalClientes = daoCliente.contarClientes();
+		int clientesRecientes = daoCliente.contarClientesRecientes();
+		int totalEntrenadores = daoEntrenador.contarEntrenadores();
 
-	    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-	    dataset.addValue(totalClientes, "Datos", "Clientes");
-	    dataset.addValue(clientesRecientes, "Datos", "Últimos 30 días");
-	    dataset.addValue(totalEntrenadores, "Datos", "Entrenadores");
+		dataset.addValue(totalClientes, "Datos", "Clientes");
+		dataset.addValue(clientesRecientes, "Datos", "Últimos 30 días");
+		dataset.addValue(totalEntrenadores, "Datos", "Entrenadores");
 
-	    JFreeChart chart = ChartFactory.createLineChart(
-	        "Estadísticas del Gimnasio",
-	        "Categoría",
-	        "Cantidad",
-	        dataset
-	    );
+		JFreeChart chart = ChartFactory.createLineChart("Estadísticas del Gimnasio", "Categoría", "Cantidad", dataset);
 
-	    // FONDO
-	    chart.setBackgroundPaint(Color.white);
+		// FONDO
+		chart.setBackgroundPaint(Color.white);
 
-	    // FONDO INTERIOR
-	    chart.getCategoryPlot().setBackgroundPaint(new Color(45,45,45));
+		// FONDO INTERIOR
+		chart.getCategoryPlot().setBackgroundPaint(new Color(45, 45, 45));
 
-	    // LINEAS GRID
-	    chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
+		// LINEAS GRID
+		chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
 
-	    // RENDERER PARA LOS PUNTOS
-	    LineAndShapeRenderer renderer = new LineAndShapeRenderer();
+		// RENDERER PARA LOS PUNTOS
+		LineAndShapeRenderer renderer = new LineAndShapeRenderer();
 
-	    // MOSTRAR LINEA
-	    renderer.setSeriesLinesVisible(0, true);
+		// MOSTRAR LINEA
+		renderer.setSeriesLinesVisible(0, true);
 
-	    // MOSTRAR PUNTOS
-	    renderer.setSeriesShapesVisible(0, true);
+		// MOSTRAR PUNTOS
+		renderer.setSeriesShapesVisible(0, true);
 
-	    // APLICAR RENDERER
-	    chart.getCategoryPlot().setRenderer(renderer);
+		// APLICAR RENDERER
+		chart.getCategoryPlot().setRenderer(renderer);
 
-	    return new ChartPanel(chart);
+		return new ChartPanel(chart);
 	}
 
 	void cargarProgreso(DefaultTableModel modelProgreso) {
@@ -374,17 +369,53 @@ public class GestionGimnasio {
 		btnInsertar_1.setBackground(accent);
 		btnInsertar_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int telefono = Integer.parseInt(textField_Telefono.getText());
-				Cliente c = new Cliente(textField_Nombre.getText(), textField_Email.getText(), telefono,
-						LocalDate.now());
-				daoCliente.insertCliente(c);
-				modelAdminCliente.setRowCount(0);
-				cargarTablaCliente(modelAdminCliente);
-				JOptionPane.showMessageDialog(null, "Cliente añadido correctamente");
-				textField_Nombre.setText("");
-				textField_Email.setText("");
-				textField_Telefono.setText("");
-				textField_Fecha_Alta.setText("");
+
+				try {
+
+					// VALIDACIONES
+					if (textField_Nombre.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Nombre obligatorio");
+						return;
+					}
+
+					if (!textField_Telefono.getText().matches("\\d{9}")) {
+						JOptionPane.showMessageDialog(null, "Teléfono inválido");
+						return;
+					}
+
+					if (textField_Email.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Email obligatorio");
+						return;
+					}
+
+					if (!textField_Email.getText().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+
+						JOptionPane.showMessageDialog(null, "Email inválido");
+						return;
+					}
+
+					int telefono = Integer.parseInt(textField_Telefono.getText());
+
+					Cliente c = new Cliente(textField_Nombre.getText(), textField_Email.getText(), telefono,
+							LocalDate.now());
+
+					daoCliente.insertCliente(c);
+
+					modelAdminCliente.setRowCount(0);
+
+					cargarTablaCliente(modelAdminCliente);
+
+					JOptionPane.showMessageDialog(null, "Cliente añadido correctamente");
+
+					textField_Nombre.setText("");
+					textField_Email.setText("");
+					textField_Telefono.setText("");
+					textField_Fecha_Alta.setText("");
+
+				} catch (NumberFormatException ex) {
+
+					JOptionPane.showMessageDialog(null, "El teléfono solo puede contener números");
+				}
 			}
 		});
 		btnInsertar_1.setBounds(242, 439, 82, 27);
@@ -394,18 +425,68 @@ public class GestionGimnasio {
 		btnActualizar.setBackground(new Color(100, 149, 237));
 		btnActualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int telefono = Integer.parseInt(textField_Telefono.getText());
-				int id = Integer.parseInt(textField_ID.getText());
 
-				Cliente c = new Cliente();
-				c.setIdCliente(id);
-				c.setNombre(textField_Nombre.getText());
-				c.setEmail(textField_Email.getText());
-				c.setTelefono(telefono);
-				c.setFecha_alta(LocalDate.parse(textField_Fecha_Alta.getText()));
-				daoCliente.updateCliente(c);
-				modelAdminCliente.setRowCount(0);
-				cargarTablaCliente(modelAdminCliente);
+				try {
+
+					if (!textField_Telefono.getText().matches("\\d{9}")) {
+						JOptionPane.showMessageDialog(null, "Teléfono inválido");
+						return;
+					}
+
+					if (textField_Nombre.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Nombre obligatorio");
+						return;
+					}
+
+					if (textField_Email.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Email obligatorio");
+						return;
+					}
+
+					if (!textField_Email.getText().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+
+						JOptionPane.showMessageDialog(null, "Email inválido");
+						return;
+					}
+
+					int telefono = Integer.parseInt(textField_Telefono.getText());
+
+					if (textField_ID.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Selecciona un cliente");
+						return;
+					}
+
+					int id = Integer.parseInt(textField_ID.getText());
+
+					Cliente c = new Cliente();
+
+					c.setIdCliente(id);
+					c.setNombre(textField_Nombre.getText());
+					c.setEmail(textField_Email.getText());
+					c.setTelefono(telefono);
+					try {
+
+						c.setFecha_alta(LocalDate.parse(textField_Fecha_Alta.getText()));
+
+					} catch (Exception ex) {
+
+						JOptionPane.showMessageDialog(null, "Fecha inválida. Usa formato YYYY-MM-DD");
+
+						return;
+					}
+
+					daoCliente.updateCliente(c);
+
+					modelAdminCliente.setRowCount(0);
+
+					cargarTablaCliente(modelAdminCliente);
+
+					JOptionPane.showMessageDialog(null, "Cliente actualizado");
+
+				} catch (NumberFormatException ex) {
+
+					JOptionPane.showMessageDialog(null, "Solo se permiten números");
+				}
 			}
 		});
 		btnActualizar.setBounds(396, 439, 94, 27);
@@ -420,7 +501,26 @@ public class GestionGimnasio {
 						"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 				if (confirm != JOptionPane.YES_OPTION)
 					return;
-				daoCliente.deleteCliente(Integer.parseInt(textField_ID.getText()));
+				try {
+					if (textField_ID.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Selecciona un cliente");
+						return;
+					}
+
+					int id = Integer.parseInt(textField_ID.getText());
+
+					daoCliente.deleteCliente(id);
+
+					JOptionPane.showMessageDialog(null, "Cliente eliminado");
+
+					modelAdminCliente.setRowCount(0);
+
+					cargarTablaCliente(modelAdminCliente);
+
+				} catch (NumberFormatException ex) {
+
+					JOptionPane.showMessageDialog(null, "ID inválido");
+				}
 				JOptionPane.showMessageDialog(null, "Cliente eliminado");
 				modelAdminCliente.setRowCount(0);
 				cargarTablaCliente(modelAdminCliente);
@@ -461,9 +561,19 @@ public class GestionGimnasio {
 		JButton btnBuscar = new JButton("Buscar");
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TableRowSorter<TableModel> sorter = new TableRowSorter<>(modelAdminCliente);
-				tableAdminCliente.setRowSorter(sorter);
-				sorter.setRowFilter(RowFilter.regexFilter(textField.getText()));
+
+				try {
+
+					TableRowSorter<TableModel> sorter = new TableRowSorter<>(modelAdminCliente);
+
+					tableAdminCliente.setRowSorter(sorter);
+
+					sorter.setRowFilter(RowFilter.regexFilter(textField.getText()));
+
+				} catch (PatternSyntaxException ex) {
+
+					JOptionPane.showMessageDialog(null, "Búsqueda inválida");
+				}
 			}
 		});
 		btnBuscar.setBounds(478, 21, 82, 27);
@@ -593,14 +703,33 @@ public class GestionGimnasio {
 		JButton btnActualizar_1 = new JButton("Actualizar");
 		btnActualizar_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int id = Integer.parseInt(textFieldIDentrenador.getText());
-				Entrenador ent = new Entrenador();
-				ent.setIdEntrenador(id);
-				ent.setNombre(textFieldNOMentrenador.getText());
-				ent.setEspecialidad(textFieldEspecialidad.getText());
-				daoEntrenador.updateEntrenador(ent);
-				modelEntrenador.setRowCount(0);
-				cargarTablaEntrenador(modelEntrenador);
+
+				try {
+					if (textFieldIDentrenador.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Selecciona un entrenador");
+						return;
+					}
+
+					int id = Integer.parseInt(textFieldIDentrenador.getText());
+
+					Entrenador ent = new Entrenador();
+
+					ent.setIdEntrenador(id);
+					ent.setNombre(textFieldNOMentrenador.getText());
+					ent.setEspecialidad(textFieldEspecialidad.getText());
+
+					daoEntrenador.updateEntrenador(ent);
+
+					modelEntrenador.setRowCount(0);
+
+					cargarTablaEntrenador(modelEntrenador);
+
+					JOptionPane.showMessageDialog(null, "Entrenador actualizado");
+
+				} catch (NumberFormatException ex) {
+
+					JOptionPane.showMessageDialog(null, "ID inválido");
+				}
 			}
 		});
 		btnActualizar_1.setBackground(new Color(100, 149, 237));
@@ -624,7 +753,26 @@ public class GestionGimnasio {
 						"Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 				if (confirm != JOptionPane.YES_OPTION)
 					return;
-				daoEntrenador.deleteEntrenador(Integer.parseInt(textFieldIDentrenador.getText()));
+				try {
+					if (textFieldIDentrenador.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Selecciona un entrenador");
+						return;
+					}
+
+					int id = Integer.parseInt(textFieldIDentrenador.getText());
+
+					daoEntrenador.deleteEntrenador(id);
+
+					JOptionPane.showMessageDialog(null, "Entrenador eliminado");
+
+					modelEntrenador.setRowCount(0);
+
+					cargarTablaEntrenador(modelEntrenador);
+
+				} catch (NumberFormatException ex) {
+
+					JOptionPane.showMessageDialog(null, "ID inválido");
+				}
 				JOptionPane.showMessageDialog(null, "Entrenador eliminado");
 				modelEntrenador.setRowCount(0);
 				cargarTablaEntrenador(modelEntrenador);
@@ -799,8 +947,8 @@ public class GestionGimnasio {
 		JPanel panelGif = new JPanel();
 		panelGif.setLayout(null);
 		panelGif.setBounds(430, 170, 300, 220);
-		panelGif.setBackground(new Color(35,35,35));
-		panelGif.setBorder(BorderFactory.createLineBorder(new Color(80,80,80), 2));
+		panelGif.setBackground(new Color(35, 35, 35));
+		panelGif.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80), 2));
 
 		panelRutinas.add(panelGif);
 
@@ -889,97 +1037,79 @@ public class GestionGimnasio {
 		btnVerEvolucion.setBackground(new Color(100, 149, 237));
 		btnVerEvolucion.addActionListener(ev -> {
 
-		    int filaEj = tableEjercicios.getSelectedRow();
+			int filaEj = tableEjercicios.getSelectedRow();
 
-		    if (filaEj == -1) {
-		        JOptionPane.showMessageDialog(frame, "Selecciona un ejercicio");
-		        return;
-		    }
+			if (filaEj == -1) {
+				JOptionPane.showMessageDialog(frame, "Selecciona un ejercicio");
+				return;
+			}
 
-		    int idEjercicio = Integer.parseInt(
-		            modelEjercicios.getValueAt(filaEj, 0).toString());
+			int idEjercicio = Integer.parseInt(modelEjercicios.getValueAt(filaEj, 0).toString());
 
-		    String nombreEjercicio =
-		            modelEjercicios.getValueAt(filaEj, 1).toString();
+			String nombreEjercicio = modelEjercicios.getValueAt(filaEj, 1).toString();
 
-		    ProgresoDAO progresoDAO = new ProgresoDAO();
+			ProgresoDAO progresoDAO = new ProgresoDAO();
 
-		    List<Progreso> historial =
-		            progresoDAO.selectProgresoByClienteYEjercicio(
-		                    clienteLogueado.getIdCliente(),
-		                    idEjercicio);
+			List<Progreso> historial = progresoDAO.selectProgresoByClienteYEjercicio(clienteLogueado.getIdCliente(),
+					idEjercicio);
 
-		    if (historial.isEmpty()) {
-		        JOptionPane.showMessageDialog(frame,
-		                "No hay progreso aún");
-		        return;
-		    }
+			if (historial.isEmpty()) {
+				JOptionPane.showMessageDialog(frame, "No hay progreso aún");
+				return;
+			}
 
-		    DefaultCategoryDataset dataset =
-		            new DefaultCategoryDataset();
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-		    for (Progreso p : historial) {
+			for (Progreso p : historial) {
 
-		        dataset.addValue(
-		                p.getPesoUtilizado(),
-		                "Peso",
-		                p.getFecha().toString());
-		    }
+				dataset.addValue(p.getPesoUtilizado(), "Peso", p.getFecha().toString());
+			}
 
-		    JFreeChart chart = ChartFactory.createLineChart(
-		            "Evolución - " + nombreEjercicio,
-		            "Fecha",
-		            "Peso (kg)",
-		            dataset);
+			JFreeChart chart = ChartFactory.createLineChart("Evolución - " + nombreEjercicio, "Fecha", "Peso (kg)",
+					dataset);
 
-		    // FONDO GENERAL
-		    chart.setBackgroundPaint(new Color(30,30,30));
+			// FONDO GENERAL
+			chart.setBackgroundPaint(new Color(30, 30, 30));
 
-		    // PLOT
-		    chart.getCategoryPlot().setBackgroundPaint(
-		            new Color(45,45,45));
+			// PLOT
+			chart.getCategoryPlot().setBackgroundPaint(new Color(45, 45, 45));
 
-		    // GRID
-		    chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
+			// GRID
+			chart.getCategoryPlot().setRangeGridlinePaint(Color.GRAY);
 
-		    // TEXTO
-		    chart.getTitle().setPaint(Color.WHITE);
+			// TEXTO
+			chart.getTitle().setPaint(Color.WHITE);
 
-		    chart.getCategoryPlot().getDomainAxis()
-		            .setTickLabelPaint(Color.WHITE);
+			chart.getCategoryPlot().getDomainAxis().setTickLabelPaint(Color.WHITE);
 
-		    chart.getCategoryPlot().getRangeAxis()
-		            .setTickLabelPaint(Color.WHITE);
+			chart.getCategoryPlot().getRangeAxis().setTickLabelPaint(Color.WHITE);
 
-		    chart.getCategoryPlot().getDomainAxis()
-		            .setLabelPaint(Color.WHITE);
+			chart.getCategoryPlot().getDomainAxis().setLabelPaint(Color.WHITE);
 
-		    chart.getCategoryPlot().getRangeAxis()
-		            .setLabelPaint(Color.WHITE);
+			chart.getCategoryPlot().getRangeAxis().setLabelPaint(Color.WHITE);
 
-		    // RENDERER
-		    LineAndShapeRenderer renderer =
-		            new LineAndShapeRenderer();
+			// RENDERER
+			LineAndShapeRenderer renderer = new LineAndShapeRenderer();
 
-		    // LINEA VISIBLE
-		    renderer.setSeriesLinesVisible(0, true);
+			// LINEA VISIBLE
+			renderer.setSeriesLinesVisible(0, true);
 
-		    // PUNTOS VISIBLES
-		    renderer.setSeriesShapesVisible(0, true);
+			// PUNTOS VISIBLES
+			renderer.setSeriesShapesVisible(0, true);
 
-		    // NUMEROS ENCIMA
-		    renderer.setDefaultItemLabelsVisible(true);
+			// NUMEROS ENCIMA
+			renderer.setDefaultItemLabelsVisible(true);
 
-		    chart.getCategoryPlot().setRenderer(renderer);
+			chart.getCategoryPlot().setRenderer(renderer);
 
-		    panelGrafico.removeAll();
+			panelGrafico.removeAll();
 
-		    ChartPanel cp = new ChartPanel(chart);
+			ChartPanel cp = new ChartPanel(chart);
 
-		    panelGrafico.add(cp, BorderLayout.CENTER);
+			panelGrafico.add(cp, BorderLayout.CENTER);
 
-		    panelGrafico.revalidate();
-		    panelGrafico.repaint();
+			panelGrafico.revalidate();
+			panelGrafico.repaint();
 		});
 		panelRutinas.add(btnVerEvolucion);
 
@@ -1259,6 +1389,16 @@ public class GestionGimnasio {
 
 				try {
 
+					if (textFieldUsuario.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "Introduce usuario");
+						return;
+					}
+
+					if (textFieldContraseña.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "Introduce contraseña");
+						return;
+					}
+
 					String rolSeleccionadoLogin = comboRolLogin.getSelectedItem().toString();
 
 					if (rolSeleccionadoLogin.equalsIgnoreCase("ENTRENADOR")) {
@@ -1305,6 +1445,11 @@ public class GestionGimnasio {
 
 					if (cliente == null) {
 						JOptionPane.showMessageDialog(frame, "Usuario no existe");
+						return;
+					}
+
+					if (cliente.getContraseña() == null) {
+						JOptionPane.showMessageDialog(frame, "Este usuario no tiene contraseña");
 						return;
 					}
 
@@ -1467,14 +1612,64 @@ public class GestionGimnasio {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
+					// NOMBRE
+					if (txtNombreRegistro.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "El nombre es obligatorio");
+						return;
+					}
+
+					// EMAIL
+					if (txtEmailRegistro.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "El email es obligatorio");
+						return;
+					}
+
+					if (!txtEmailRegistro.getText().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+						JOptionPane.showMessageDialog(frame, "Email inválido");
+						return;
+					}
+
+					// TELEFONO
+					if (txtTelefonoRegistro.getText().trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "El teléfono es obligatorio");
+						return;
+					}
+
+					if (!txtTelefonoRegistro.getText().matches("\\d{9}")) {
+						JOptionPane.showMessageDialog(frame, "El teléfono debe tener 9 números");
+						return;
+					}
+
+					// PASSWORD
+					if (new String(txtPasswordRegistro.getPassword()).trim().isEmpty()) {
+						JOptionPane.showMessageDialog(frame, "La contraseña es obligatoria");
+						return;
+					}
+
+					if (new String(txtPasswordRegistro.getPassword()).length() < 6) {
+						JOptionPane.showMessageDialog(frame, "La contraseña debe tener mínimo 6 caracteres");
+						return;
+					}
 
 					Cliente nuevo = new Cliente();
 
-					nuevo.setNombre(txtNombreRegistro.getText());
+					nuevo.setNombre(txtNombreRegistro.getText().trim());
 
-					nuevo.setEmail(txtEmailRegistro.getText());
+					nuevo.setEmail(txtEmailRegistro.getText().trim());
 
-					nuevo.setTelefono(Integer.parseInt(txtTelefonoRegistro.getText()));
+					int telefono;
+
+					try {
+
+						telefono = Integer.parseInt(txtTelefonoRegistro.getText());
+
+					} catch (NumberFormatException ex) {
+
+						JOptionPane.showMessageDialog(frame, "Teléfono inválido");
+						return;
+					}
+
+					nuevo.setTelefono(telefono);
 
 					// FECHA AUTOMÁTICA
 					nuevo.setFecha_alta(LocalDate.now());
@@ -1485,6 +1680,13 @@ public class GestionGimnasio {
 					nuevo.setContraseña(hash);
 
 					nuevo.setRol(comboRolRegistro.getSelectedItem().toString());
+
+					Cliente existente = daoCliente.selectClienteByNombre(txtNombreRegistro.getText().trim());
+
+					if (existente != null) {
+						JOptionPane.showMessageDialog(frame, "Ese usuario ya existe");
+						return;
+					}
 
 					daoCliente.insertCliente(nuevo);
 
