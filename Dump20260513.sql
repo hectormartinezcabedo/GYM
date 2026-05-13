@@ -36,7 +36,7 @@ CREATE TABLE `cliente` (
   PRIMARY KEY (`idCliente`),
   KEY `FKhmcv2cjxwiohqpc61c74j1c08` (`id_entrenador`),
   CONSTRAINT `FKhmcv2cjxwiohqpc61c74j1c08` FOREIGN KEY (`id_entrenador`) REFERENCES `entrenador` (`idEntrenador`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN',NULL),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$8ryxqzw8IsguTJoDS33yZuuIxO/Rxt4F1XSoMurmD/Jb.sWd4hx1.','CLIENTE',NULL),(4,'hector','hectormartinezcabedo@gmail.com',644021507,'2026-05-08','$2a$10$seJM2WDUvRHpQjatQOqbou.Q5.3917X6W.hsU11dXOthvBT0qiE5W','CLIENTE',1);
+INSERT INTO `cliente` VALUES (1,'admin','admin@admin.com',123456789,'2026-05-07','$2a$10$JbOkMpaXVfQ.Ve0aYydiFOTXkX/MB/SLWv//NkPYVZ0IK4/Jc68di','ADMIN',NULL),(2,'pepe','pepe@gmail.com',123456788,'2026-05-07','$2a$10$P0kSWn1Zz98PBQjwXnre.eNXmro9teqeuhEXYAnDHMN6nPhcgtuRq','CLIENTE',NULL),(4,'hector','hectormartinezcabedo@gmail.com',644021507,'2026-05-08','$2a$10$seJM2WDUvRHpQjatQOqbou.Q5.3917X6W.hsU11dXOthvBT0qiE5W','CLIENTE',1),(6,'paco','paco@gmail.com',612345678,'2026-05-13','$2a$10$bwhiR6sZcgi8RSlGjpLYBOAQ8ALXG77S30w.YCrZK5yg5qpuMe2wq','CLIENTE',2);
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +97,7 @@ CREATE TABLE `cliente_rutina` (
 
 LOCK TABLES `cliente_rutina` WRITE;
 /*!40000 ALTER TABLE `cliente_rutina` DISABLE KEYS */;
-INSERT INTO `cliente_rutina` VALUES (4,1,NULL,NULL,NULL),(4,2,NULL,NULL,NULL),(4,3,NULL,NULL,NULL);
+INSERT INTO `cliente_rutina` VALUES (4,1,NULL,NULL,NULL),(4,2,NULL,NULL,NULL),(4,3,NULL,NULL,NULL),(6,1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `cliente_rutina` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -150,7 +150,7 @@ CREATE TABLE `ejercicio` (
 
 LOCK TABLES `ejercicio` WRITE;
 /*!40000 ALTER TABLE `ejercicio` DISABLE KEYS */;
-INSERT INTO `ejercicio` VALUES (1,'Press banca','Ejercicio de pecho','img/ejercicios/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',1),(2,'Dominadas','Ejercicio de espalda','img/ejercicios/18661301-Wide-Grip-Pull-Up-on-Dip-Cage_Back_720.gif',2),(3,'Sentadillas','Ejercicio de piernas','img/ejercicios/00431301-Barbell-Full-Squat_Thighs_720.gif',3),(4,'Curl bíceps','Ejercicio de brazos','img/ejercicios/anim-dumbbell-bicep-curls.gif',4);
+INSERT INTO `ejercicio` VALUES (1,'Press banca','Ejercicio de pecho','/img/ejercicios/00251301-Barbell-Bench-Press_Chest-FIX_720.gif',1),(2,'Dominadas','Ejercicio de espalda','/img/ejercicios/18661301-Wide-Grip-Pull-Up-on-Dip-Cage_Back_720.gif',2),(3,'Sentadillas','Ejercicio de piernas','/img/ejercicios/00431301-Barbell-Full-Squat_Thighs_720.gif',3),(4,'Curl bíceps','Ejercicio de brazos','/img/ejercicios/anim-dumbbell-bicep-curls.gif',4);
 /*!40000 ALTER TABLE `ejercicio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,7 +177,7 @@ CREATE TABLE `entrenador` (
 
 LOCK TABLES `entrenador` WRITE;
 /*!40000 ALTER TABLE `entrenador` DISABLE KEYS */;
-INSERT INTO `entrenador` VALUES (1,'Carlos','','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR'),(2,'Ana','','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR'),(3,'Luis','','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR');
+INSERT INTO `entrenador` VALUES (1,'Carlos','Musculación','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR'),(2,'Ana','Aeróbico','$2a$10$SJ7tpXG/VbdEPYqc9p4sceuSaMv5oiBrozo.iPXTHSnv4wHTl2/xi','ENTRENADOR'),(3,'Luis','Movilidad','$2a$10$6x7umwf7/pWK7m03srUuKO4UnxyAN3hXno0XQyIv7nLAuzSFF9T9m','ENTRENADOR');
 /*!40000 ALTER TABLE `entrenador` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -293,7 +293,7 @@ CREATE TABLE `hibernate_sequence` (
 
 LOCK TABLES `hibernate_sequence` WRITE;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
-INSERT INTO `hibernate_sequence` VALUES (6);
+INSERT INTO `hibernate_sequence` VALUES (7);
 /*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -316,7 +316,7 @@ CREATE TABLE `progreso` (
   KEY `id_ejercicio` (`id_ejercicio`),
   CONSTRAINT `progreso_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`idCliente`) ON DELETE CASCADE,
   CONSTRAINT `progreso_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `ejercicio` (`idEjercicio`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -325,7 +325,7 @@ CREATE TABLE `progreso` (
 
 LOCK TABLES `progreso` WRITE;
 /*!40000 ALTER TABLE `progreso` DISABLE KEYS */;
-INSERT INTO `progreso` VALUES (5,4,1,70,10,'2026-05-12'),(6,4,1,90,4,'2026-05-12'),(7,4,2,40,20,'2026-05-12');
+INSERT INTO `progreso` VALUES (5,4,1,70,10,'2026-05-12'),(6,4,1,90,4,'2026-05-12'),(7,4,2,40,20,'2026-05-12'),(8,4,1,100,2,'2026-05-13');
 /*!40000 ALTER TABLE `progreso` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -399,4 +399,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-12 13:30:46
+-- Dump completed on 2026-05-13 16:19:55

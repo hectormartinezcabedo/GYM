@@ -101,5 +101,7 @@ public class EntrenadorDAO{
 	    session.close();
 	    return lista.isEmpty() ? null : lista.get(0);
 	}
+	
+	
     
 }

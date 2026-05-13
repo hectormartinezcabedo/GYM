@@ -22,7 +22,7 @@ public class Cliente {
 	private String email;
 
 	@Column(name = "telefono")
-	private int telefono;
+	private String telefono;
 
 	@Column(name = "fecha_alta")
 	private LocalDate fecha_alta;
@@ -54,7 +54,7 @@ public class Cliente {
 
 	}
 
-	public Cliente(String nombre, String email, int telefono, LocalDate fecha_alta) {
+	public Cliente(String nombre, String email, String telefono, LocalDate fecha_alta) {
 		this.nombre = nombre;
 		this.email = email;
 		this.telefono = telefono;
@@ -85,11 +85,11 @@ public class Cliente {
 		this.email = email;
 	}
 
-	public int getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	public void setTelefono(int telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 
