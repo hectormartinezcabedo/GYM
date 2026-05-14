@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Manual de Usuario — GestiónGimnasio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #0f0f0f;
+    --surface:   #161616;
+    --surface2:  #1e1e1e;
+    --border:    #2a2a2a;
+    --accent:    #00e5a0;
+    --accent2:   #6e7fff;
+    --danger:    #ff5c6a;
+    --warn:      #ffbe45;
+    --text:      #f0f0f0;
+    --muted:     #888;
+    --admin-c:   #ff9f43;
+    --trainer-c: #6e7fff;
+    --client-c:  #00e5a0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 260px; height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 0 0 40px;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; line-height: 1.2; }
+  .logo-text span { color: var(--accent); }
+
+  .nav-group { padding: 20px 16px 0; }
+  .nav-group-label {
+    font-size: 10px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 0 8px 8px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    color: #aaa; text-decoration: none;
+    font-size: 13.5px; font-weight: 400;
+    transition: background .15s, color .15s;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: var(--surface2); color: var(--accent); font-weight: 500; }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+  .role-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; flex-shrink: 0;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: 260px;
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 64px 64px;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,229,160,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,229,160,.08);
+    border: 1px solid rgba(0,229,160,.2);
+    color: var(--accent);
+    font-size: 12px; font-weight: 500; letter-spacing: .06em;
+    padding: 5px 12px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 46px; font-weight: 800; line-height: 1.1;
+    margin-bottom: 16px; max-width: 640px;
+  }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero p {
+    color: #aaa; max-width: 520px; font-size: 16px; margin-bottom: 32px;
+  }
+  .hero-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    border: 1px solid;
+  }
+  .badge-admin  { color: var(--admin-c);   border-color: var(--admin-c);   background: rgba(255,159,67,.07); }
+  .badge-trainer{ color: var(--trainer-c); border-color: var(--trainer-c); background: rgba(110,127,255,.07); }
+  .badge-client { color: var(--client-c);  border-color: var(--client-c);  background: rgba(0,229,160,.07); }
+
+  /* ── CONTENT ── */
+  .content { padding: 56px 64px; max-width: 860px; }
+
+  section { margin-bottom: 72px; }
+
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 32px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .si-green  { background: rgba(0,229,160,.12); }
+  .si-blue   { background: rgba(110,127,255,.12); }
+  .si-orange { background: rgba(255,159,67,.12); }
+  .si-red    { background: rgba(255,92,106,.12); }
+  .si-yellow { background: rgba(255,190,69,.12); }
+
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 700;
+  }
+  .section-header .section-num {
+    font-size: 11px; color: var(--muted); font-weight: 500;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700;
+    margin: 32px 0 12px; color: var(--text);
+  }
+
+  p { margin-bottom: 14px; color: #ccc; }
+
+  /* ── ROLE CARDS ── */
+  .role-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 24px 0; }
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+    position: relative; overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .role-card:hover { transform: translateY(-2px); }
+  .role-card.admin   { border-top: 3px solid var(--admin-c); }
+  .role-card.trainer { border-top: 3px solid var(--trainer-c); }
+  .role-card.client  { border-top: 3px solid var(--client-c); }
+  .role-card h4 {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .role-card.admin   h4 { color: var(--admin-c); }
+  .role-card.trainer h4 { color: var(--trainer-c); }
+  .role-card.client  h4 { color: var(--client-c); }
+  .role-card ul { list-style: none; }
+  .role-card ul li {
+    font-size: 12.5px; color: #aaa;
+    padding: 3px 0; display: flex; align-items: flex-start; gap: 7px;
+  }
+  .role-card ul li::before { content: '›'; color: var(--muted); flex-shrink: 0; }
+
+  /* ── STEPS ── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex; gap: 18px; margin-bottom: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px;
+    transition: border-color .2s;
+  }
+  .step:hover { border-color: #3a3a3a; }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    flex-shrink: 0; color: var(--accent);
+  }
+  .step-body { flex: 1; }
+  .step-body strong {
+    display: block; font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700; margin-bottom: 5px;
+  }
+  .step-body p { margin: 0; font-size: 13.5px; }
+
+  /* ── VALIDATION TABLE ── */
+  .val-table {
+    width: 100%; border-collapse: collapse;
+    margin: 20px 0; font-size: 13.5px;
+  }
+  .val-table th {
+    background: var(--surface2); color: var(--muted);
+    font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; padding: 10px 14px;
+    text-align: left; border-bottom: 1px solid var(--border);
+  }
+  .val-table td {
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+    color: #ccc; vertical-align: top;
+  }
+  .val-table tr:last-child td { border-bottom: none; }
+  .val-table tr:hover td { background: rgba(255,255,255,.02); }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .tag-ok    { background: rgba(0,229,160,.12); color: var(--accent); }
+  .tag-error { background: rgba(255,92,106,.12); color: var(--danger); }
+  .tag-warn  { background: rgba(255,190,69,.12); color: var(--warn); }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    border-radius: 12px; padding: 16px 20px;
+    margin: 20px 0; display: flex; gap: 14px; align-items: flex-start;
+  }
+  .info-box.info  { background: rgba(110,127,255,.08); border: 1px solid rgba(110,127,255,.2); }
+  .info-box.warn  { background: rgba(255,190,69,.08);  border: 1px solid rgba(255,190,69,.2); }
+  .info-box.tip   { background: rgba(0,229,160,.08);   border: 1px solid rgba(0,229,160,.2); }
+  .info-box.error { background: rgba(255,92,106,.08);  border: 1px solid rgba(255,92,106,.2); }
+  .info-box .ib-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-box p { margin: 0; font-size: 13.5px; color: #ccc; }
+  .info-box strong { display: block; font-size: 13px; margin-bottom: 4px; }
+  .info-box.info  strong { color: var(--trainer-c); }
+  .info-box.warn  strong { color: var(--warn); }
+  .info-box.tip   strong { color: var(--accent); }
+  .info-box.error strong { color: var(--danger); }
+
+  /* ── FIELD GRID ── */
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .field-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .field-item .fname {
+    font-size: 12px; font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+  }
+  .field-item .fdesc { font-size: 13px; color: #bbb; }
+  .field-item .fval {
+    font-size: 11.5px; margin-top: 5px;
+    color: var(--accent); font-style: italic;
+  }
+
+  /* ── TABS DIAGRAM ── */
+  .tabs-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; margin: 24px 0;
+  }
+  .tabs-bar {
+    display: flex; gap: 0; margin-bottom: 20px;
+    background: var(--surface2); border-radius: 8px; padding: 4px;
+  }
+  .tabs-bar .tab {
+    flex: 1; text-align: center; padding: 8px 12px;
+    border-radius: 6px; font-size: 12px; font-weight: 600;
+    color: var(--muted); cursor: default;
+  }
+  .tab.t-admin   { background: rgba(255,159,67,.15); color: var(--admin-c); }
+  .tab.t-client  { background: rgba(0,229,160,.15);  color: var(--client-c); }
+  .tab.t-trainer { background: rgba(110,127,255,.15); color: var(--trainer-c); }
+
+  .tabs-content-demo {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+  }
+  .tab-panel {
+    border-radius: 10px; padding: 14px;
+    font-size: 12.5px;
+  }
+  .tab-panel.tp-admin   { background: rgba(255,159,67,.05);  border: 1px solid rgba(255,159,67,.15); }
+  .tab-panel.tp-client  { background: rgba(0,229,160,.05);   border: 1px solid rgba(0,229,160,.15); }
+  .tab-panel.tp-trainer { background: rgba(110,127,255,.05); border: 1px solid rgba(110,127,255,.15); }
+  .tab-panel h5 {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    margin-bottom: 8px; text-transform: uppercase; letter-spacing: .08em;
+  }
+  .tp-admin   h5 { color: var(--admin-c); }
+  .tp-client  h5 { color: var(--client-c); }
+  .tp-trainer h5 { color: var(--trainer-c); }
+  .tab-panel li { list-style: none; color: #aaa; padding: 2px 0; font-size: 12px; }
+  .tab-panel li::before { content: '→ '; color: var(--muted); }
+
+  /* ── EMAIL PREVIEW ── */
+  .email-preview {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin: 20px 0;
+  }
+  .ep-header {
+    background: var(--surface); padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ep-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .ep-body { padding: 20px; font-size: 13.5px; color: #bbb; line-height: 1.8; }
+  .ep-body .ep-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+  }
+  .ep-meta { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin-bottom: 16px; }
+  .ep-meta span:nth-child(odd) { color: var(--muted); font-size: 12px; }
+  .ep-content {
+    background: var(--bg); border-radius: 8px; padding: 16px;
+    font-size: 13px; white-space: pre-line; color: #ccc;
+  }
+
+  /* ── CHART MOCKUP ── */
+  .chart-mockup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; margin: 20px 0;
+  }
+  .chart-title {
+    font-family: 'Syne', sans-serif; font-size: 14px;
+    font-weight: 700; margin-bottom: 20px; color: var(--text);
+  }
+  .bar-group { display: flex; align-items: flex-end; gap: 24px; height: 100px; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .bar {
+    width: 48px; border-radius: 6px 6px 0 0;
+    transition: opacity .2s;
+  }
+  .bar:hover { opacity: .8; }
+  .bar-label { font-size: 11px; color: var(--muted); }
+  .bar-val { font-size: 12px; font-weight: 600; color: var(--text); }
+
+  /* ── THEME TOGGLE DEMO ── */
+  .theme-demo {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0;
+  }
+  .theme-panel {
+    border-radius: 12px; padding: 18px; border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .theme-preview {
+    width: 48px; height: 48px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .tp-dark  { background: #1e1e1e; border: 1px solid #333; }
+  .tp-light { background: #efefef; border: 1px solid #ddd; }
+
+  /* ── SHORTCUT TABLE ── */
+  .shortcut-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+  .shortcut-item {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 13px 16px;
+  }
+  .shortcut-action { flex: 1; font-size: 13.5px; color: #ccc; }
+  .kbd {
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .key {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-bottom: 2px solid #3a3a3a;
+    color: var(--text); font-size: 12px; font-weight: 600;
+    padding: 3px 8px; border-radius: 5px;
+    font-family: 'DM Sans', monospace;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 64px; margin-left: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    color: var(--muted); font-size: 12.5px;
+  }
+  .doc-footer a { color: var(--accent); text-decoration: none; }
+
+  /* ── TOC PROGRESS ── */
+  .toc-progress {
+    position: fixed; top: 0; left: 260px; right: 0;
+    height: 2px; background: var(--border); z-index: 50;
+  }
+  .toc-progress-bar {
+    height: 100%; background: var(--accent); width: 0%;
+    transition: width .1s;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .hero, .content { padding: 32px 24px; }
+    .role-cards, .tabs-content-demo, .field-grid, .theme-demo { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="toc-progress"><div class="toc-progress-bar" id="progressBar"></div></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💪</div>
+    <div class="logo-text">Gestión<br/><span>Gimnasio</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Introducción</div>
+    <a href="#inicio" class="nav-item active"><span class="icon">🏠</span> Inicio</a>
+    <a href="#roles" class="nav-item"><span class="icon">👥</span> Roles del sistema</a>
+    <a href="#interfaz" class="nav-item"><span class="icon">🖥️</span> Interfaz general</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Acceso</div>
+    <a href="#login" class="nav-item"><span class="icon">🔐</span> Iniciar sesión</a>
+    <a href="#registro" class="nav-item"><span class="icon">📝</span> Registrarse</a>
+    <a href="#validaciones" class="nav-item"><span class="icon">✅</span> Validaciones</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Por rol</div>
+    <a href="#admin" class="nav-item"><span class="icon">🛡️</span> <span style="color:var(--admin-c)">Administrador</span></a>
+    <a href="#cliente" class="nav-item"><span class="icon">🏋️</span> <span style="color:var(--client-c)">Cliente</span></a>
+    <a href="#entrenador" class="nav-item"><span class="icon">📋</span> <span style="color:var(--trainer-c)">Entrenador</span></a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Extras</div>
+    <a href="#email" class="nav-item"><span class="icon">📧</span> Notificaciones email</a>
+    <a href="#tema" class="nav-item"><span class="icon">🎨</span> Tema oscuro/claro</a>
+    <a href="#errores" class="nav-item"><span class="icon">⚠️</span> Errores frecuentes</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero" id="inicio">
+    <div class="hero-tag">📖 Manual de Usuario</div>
+    <h1>Gestión<em>Gimnasio</em><br/>Manual de usuario</h1>
+    <p>Guía completa para administradores, entrenadores y clientes de la aplicación de escritorio de gestión del gimnasio.</p>
+    <div class="hero-badges">
+      <span class="badge badge-admin">🛡️ Administrador</span>
+      <span class="badge badge-trainer">📋 Entrenador</span>
+      <span class="badge badge-client">🏋️ Cliente</span>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══════════════════════════════════════════ 1. ROLES -->
+    <section id="roles">
+      <div class="section-header">
+        <div class="section-icon si-green">👥</div>
+        <div>
+          <div class="section-num">Sección 1</div>
+          <h2>Roles del sistema</h2>
+        </div>
+      </div>
+
+      <p>La aplicación tiene <strong>tres roles diferenciados</strong>. Cada rol accede a distintas pestañas y funciones. Al iniciar sesión, el sistema redirige automáticamente al panel correspondiente.</p>
+
+      <div class="role-cards">
+        <div class="role-card admin">
+          <h4>🛡️ Administrador</h4>
+          <ul>
+            <li>Ver, añadir, editar y eliminar clientes</li>
+            <li>Ver, añadir, editar y eliminar entrenadores</li>
+            <li>Consultar estadísticas del gimnasio</li>
+            <li>Accede sólo a la pestaña Admin</li>
+          </ul>
+        </div>
+        <div class="role-card trainer">
+          <h4>📋 Entrenador</h4>
+          <ul>
+            <li>Ver los clientes asignados a él</li>
+            <li>Asignar rutinas a sus clientes</li>
+            <li>El cliente recibe email automático</li>
+            <li>Accede sólo a la pestaña Entrenador</li>
+          </ul>
+        </div>
+        <div class="role-card client">
+          <h4>🏋️ Cliente</h4>
+          <ul>
+            <li>Ver y editar su perfil</li>
+            <li>Elegir y asignar su entrenador</li>
+            <li>Consultar rutinas asignadas</li>
+            <li>Registrar y ver su progreso</li>
+            <li>Ver gráfico de evolución por ejercicio</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box info">
+        <div class="ib-icon">ℹ️</div>
+        <div>
+          <strong>Nota sobre el rol Admin</strong>
+          <p>El usuario administrador se crea directamente en base de datos y tiene el campo <code>rol = 'ADMIN'</code>. Desde el panel de registro sólo se puede crear rol <strong>CLIENTE</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 2. INTERFAZ -->
+    <section id="interfaz">
+      <div class="section-header">
+        <div class="section-icon si-blue">🖥️</div>
+        <div>
+          <div class="section-num">Sección 2</div>
+          <h2>Interfaz general</h2>
+        </div>
+      </div>
+
+      <p>La aplicación se abre con una ventana de <strong>1200 × 900 px</strong> no redimensionable. Está organizada en dos zonas principales:</p>
+
+      <div class="tabs-diagram">
+        <div class="tabs-bar">
+          <div class="tab t-admin">Admin</div>
+          <div class="tab t-client">Clientes</div>
+          <div class="tab t-trainer">Entrenador</div>
+        </div>
+        <div class="tabs-content-demo">
+          <div class="tab-panel tp-admin">
+            <h5>Panel Admin</h5>
+            <ul>
+              <li>Gestión Clientes</li>
+              <li>Gestión Entrenadores</li>
+              <li>Estadísticas</li>
+            </ul>
+          </div>
+          <div class="tab-panel tp-client">
+            <h5>Panel Cliente</h5>
+            <ul>
+              <li>Perfil</li>
+              <li>Rutinas &amp; Ejercicios</li>
+              <li>Progreso</li>
+              <li>Gráfico evolución</li>
+            </ul>
+          </div>
+          <div class="tab-panel tp-trainer">
+            <h5>Panel Entrenador</h5>
+            <ul>
+              <li>Lista de clientes</li>
+              <li>Asignar rutinas</li>
+              <li>Notificación email</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <h3>Elementos comunes</h3>
+      <div class="field-grid">
+        <div class="field-item">
+          <div class="fname">Botón Oscuro / Claro</div>
+          <div class="fdesc">Cambia el tema visual de la aplicación en tiempo real.</div>
+          <div class="fval">Esquina superior derecha</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Cerrar sesión</div>
+          <div class="fdesc">Vuelve a la pantalla de login y limpia el usuario logueado.</div>
+          <div class="fval">Parte inferior derecha</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Bienvenida</div>
+          <div class="fdesc">Muestra el nombre del usuario y su rol entre paréntesis.</div>
+          <div class="fval">Parte inferior izquierda</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Panel de login</div>
+          <div class="fdesc">Visible al arrancar. Se oculta tras el login correcto.</div>
+          <div class="fval">Centro de la ventana</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 3. LOGIN -->
+    <section id="login">
+      <div class="section-header">
+        <div class="section-icon si-green">🔐</div>
+        <div>
+          <div class="section-num">Sección 3</div>
+          <h2>Iniciar sesión</h2>
+        </div>
+      </div>
+
+      <p>Al abrir la aplicación se muestra el panel de login con dos pestañas: <strong>Iniciar Sesión</strong> y <strong>Registrarse</strong>.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Introduce el nombre de usuario</strong>
+            <p>Escribe el nombre exacto con el que te registraste en el campo <em>USUARIO</em>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Introduce la contraseña</strong>
+            <p>Puedes mantener pulsado el icono 👁️ junto al campo para ver los caracteres mientras lo sostienes.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Selecciona el rol en el desplegable</strong>
+            <p>Elige <em>CLIENTE</em>, <em>ENTRENADOR</em> o <em>ADMIN</em>. El rol debe coincidir exactamente con el asignado a tu cuenta, de lo contrario el acceso será denegado.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Pulsa "Iniciar Sesión"</strong>
+            <p>Si los datos son correctos, el panel de login se oculta y se muestra la pestaña correspondiente a tu rol.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box warn">
+        <div class="ib-icon">⚠️</div>
+        <div>
+          <strong>Rol incorrecto</strong>
+          <p>Si seleccionas un rol diferente al que tiene tu cuenta, verás el mensaje <em>"El usuario no pertenece al rol seleccionado"</em> aunque la contraseña sea correcta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 4. REGISTRO -->
+    <section id="registro">
+      <div class="section-header">
+        <div class="section-icon si-blue">📝</div>
+        <div>
+          <div class="section-num">Sección 4</div>
+          <h2>Registrarse</h2>
+        </div>
+      </div>
+
+      <p>Cualquier persona puede crear una cuenta de <strong>tipo CLIENTE</strong> desde la pestaña <em>Registrarse</em>. Los roles Entrenador y Admin los crea únicamente el administrador.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Nombre</strong>
+            <p>Mínimo 3 letras. Solo permite letras y espacios, sin números ni símbolos.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Email</strong>
+            <p>Formato estándar: <code>usuario@dominio.es</code>. El dominio debe tener extensión de 2–3 letras.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Teléfono</strong>
+            <p>Número español de 9 dígitos que empiece por 6, 7, 8 o 9.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Contraseña y repetición</strong>
+            <p>Ambos campos deben coincidir. La contraseña debe cumplir los requisitos de seguridad (ver sección Validaciones).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <strong>Pulsa "Registrarse"</strong>
+            <p>Si el nombre de usuario ya existe, el sistema lo notifica y no crea el registro duplicado. La fecha de alta se asigna automáticamente con la fecha actual.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="ib-icon">💡</div>
+        <div>
+          <strong>Contraseña segura</strong>
+          <p>Pulsa el icono 👁️ junto a cada campo de contraseña para ver lo que estás escribiendo. Suéltalo para ocultar de nuevo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 5. VALIDACIONES -->
+    <section id="validaciones">
+      <div class="section-header">
+        <div class="section-icon si-yellow">✅</div>
+        <div>
+          <div class="section-num">Sección 5</div>
+          <h2>Validaciones del sistema</h2>
+        </div>
+      </div>
+
+      <p>Todos los formularios validan los datos antes de enviar. Si un campo es incorrecto aparece <strong>borde rojo</strong> en el campo y un mensaje de error.</p>
+
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Campo</th>
+            <th>Regla</th>
+            <th>Ejemplo válido</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Nombre</strong></td>
+            <td>Mínimo 3 letras, solo letras y espacios (acepta tildes y ñ)</td>
+            <td>Juan García</td>
+            <td><span class="tag tag-ok">Obligatorio</span></td>
+          </tr>
+          <tr>
+            <td><strong>Email</strong></td>
+            <td>Formato <code>x@x.xx</code> — extensión 2–3 letras</td>
+            <td>juan@gym.es</td>
+            <td><span class="tag tag-ok">Obligatorio</span></td>
+          </tr>
+          <tr>
+            <td><strong>Teléfono</strong></td>
+            <td>9 dígitos, empieza por 6, 7, 8 o 9</td>
+            <td>612345678</td>
+            <td><span class="tag tag-ok">Obligatorio</span></td>
+          </tr>
+          <tr>
+            <td><strong>Contraseña</strong></td>
+            <td>Mínimo 6 caracteres, 1 mayúscula, 1 minúscula, 1 número</td>
+            <td>Gym2024</td>
+            <td><span class="tag tag-ok">Obligatorio</span></td>
+          </tr>
+          <tr>
+            <td><strong>Fecha</strong></td>
+            <td>Formato ISO: <code>YYYY-MM-DD</code></td>
+            <td>2024-01-15</td>
+            <td><span class="tag tag-warn">Solo Admin</span></td>
+          </tr>
+          <tr>
+            <td><strong>Peso (kg)</strong></td>
+            <td>Número decimal mayor que 0 y menor que 500</td>
+            <td>75.5</td>
+            <td><span class="tag tag-ok">Progreso</span></td>
+          </tr>
+          <tr>
+            <td><strong>Repeticiones</strong></td>
+            <td>Número entero mayor que 0 y menor que 1000</td>
+            <td>12</td>
+            <td><span class="tag tag-ok">Progreso</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box error">
+        <div class="ib-icon">🔴</div>
+        <div>
+          <strong>Campo con borde rojo</strong>
+          <p>El campo que falla se marca con un borde rojo de 2 px. Al corregirlo y volver a enviar, el borde desaparece automáticamente.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 6. ADMIN -->
+    <section id="admin">
+      <div class="section-header">
+        <div class="section-icon si-orange">🛡️</div>
+        <div>
+          <div class="section-num">Sección 6</div>
+          <h2>Panel Administrador</h2>
+        </div>
+      </div>
+
+      <p>El administrador accede a la pestaña <strong>Admin</strong>, que contiene tres subpestañas: <em>Gestión Clientes</em>, <em>Gestión Entrenadores</em> y <em>Estadísticas</em>.</p>
+
+      <h3>Gestión de Clientes</h3>
+      <p>Muestra una tabla con todos los clientes registrados (ID, Nombre, Email, Teléfono, Fecha Alta, Contraseña hasheada).</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">🔍</div>
+          <div class="step-body">
+            <strong>Buscar cliente</strong>
+            <p>Escribe cualquier texto en el campo <em>Buscar cliente</em> y pulsa <strong>Buscar</strong>. La tabla filtra por cualquier columna en tiempo real mediante expresión regular.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">✏️</div>
+          <div class="step-body">
+            <strong>Seleccionar y editar</strong>
+            <p>Haz clic en una fila de la tabla para cargar sus datos en los campos de la parte inferior. Modifica los campos que necesites.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">➕</div>
+          <div class="step-body">
+            <strong>Insertar nuevo cliente</strong>
+            <p>Rellena Nombre, Email y Teléfono, luego pulsa <strong>Insertar</strong>. La fecha de alta se asigna automáticamente.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">💾</div>
+          <div class="step-body">
+            <strong>Actualizar cliente</strong>
+            <p>Tras seleccionar un cliente y modificar sus datos, pulsa <strong>Actualizar</strong>. El campo contraseña: si se deja vacío se conserva la actual; si se escribe una nueva, se hashea automáticamente con BCrypt.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">🗑️</div>
+          <div class="step-body">
+            <strong>Eliminar cliente</strong>
+            <p>Selecciona el cliente y pulsa <strong>Borrar</strong>. El sistema pedirá confirmación antes de eliminar. La acción es <strong>irreversible</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Gestión de Entrenadores</h3>
+      <p>Misma estructura que la gestión de clientes pero para entrenadores. Los campos disponibles son <strong>Nombre</strong>, <strong>Especialidad</strong> y <strong>Contraseña</strong>.</p>
+
+      <div class="info-box info">
+        <div class="ib-icon">ℹ️</div>
+        <div>
+          <strong>Contraseña de entrenador</strong>
+          <p>Al insertar un entrenador la contraseña es <strong>obligatoria</strong>. Al actualizar, si se deja el campo vacío se conserva la contraseña existente. El ojo 👁️ funciona igual que en el login.</p>
+        </div>
+      </div>
+
+      <h3>Estadísticas del Gimnasio</h3>
+      <p>Muestra un gráfico de líneas con tres métricas:</p>
+
+      <div class="chart-mockup">
+        <div class="chart-title">Dashboard del Gimnasio</div>
+        <div class="bar-group">
+          <div class="bar-wrap">
+            <div class="bar-val" id="bv1">—</div>
+            <div class="bar" style="height:80px; background: var(--client-c);"></div>
+            <div class="bar-label">Clientes</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val" id="bv2">—</div>
+            <div class="bar" style="height:40px; background: var(--warn);"></div>
+            <div class="bar-label">Últimos 30 días</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-val" id="bv3">—</div>
+            <div class="bar" style="height:25px; background: var(--trainer-c);"></div>
+            <div class="bar-label">Entrenadores</div>
+          </div>
+        </div>
+        <div style="margin-top:14px; font-size:12px; color:var(--muted);">Pulsa el botón <strong style="color:var(--text)">Actualizar</strong> para recargar los datos en tiempo real.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 7. CLIENTE -->
+    <section id="cliente">
+      <div class="section-header">
+        <div class="section-icon si-green">🏋️</div>
+        <div>
+          <div class="section-num">Sección 7</div>
+          <h2>Panel Cliente</h2>
+        </div>
+      </div>
+
+      <p>El cliente accede a la pestaña <strong>Clientes</strong>, que contiene dos subpestañas: <em>Perfil</em> y <em>Rutinas</em>.</p>
+
+      <h3>Pestaña Perfil</h3>
+      <p>Muestra una tabla de sólo lectura con sus datos y los campos editables debajo.</p>
+
+      <div class="field-grid">
+        <div class="field-item">
+          <div class="fname">ID</div>
+          <div class="fdesc">Identificador único. No editable.</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Nombre</div>
+          <div class="fdesc">Nombre completo del cliente.</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Email</div>
+          <div class="fdesc">Correo electrónico de contacto.</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Teléfono</div>
+          <div class="fdesc">Número de 9 dígitos.</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Fecha Alta</div>
+          <div class="fdesc">Fecha de registro. Formato YYYY-MM-DD.</div>
+        </div>
+        <div class="field-item">
+          <div class="fname">Tu entrenador</div>
+          <div class="fdesc">Desplegable para seleccionar y asignar entrenador.</div>
+          <div class="fval">Botón "Asignar Entrenador"</div>
+        </div>
+      </div>
+
+      <h3>Asignar entrenador</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Selecciona el entrenador en el desplegable</strong>
+            <p>El desplegable muestra todos los entrenadores disponibles por su nombre.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Pulsa "Asignar Entrenador"</strong>
+            <p>El sistema guarda la relación en base de datos y muestra un mensaje de confirmación con el nombre del entrenador asignado.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Pestaña Rutinas</h3>
+      <p>Esta pestaña tiene varias partes: tabla de rutinas asignadas, filtro por grupo muscular, tabla de ejercicios con GIF animado, y sección de progreso.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">🗂️</div>
+          <div class="step-body">
+            <strong>Ver rutinas asignadas</strong>
+            <p>En la tabla superior aparecen todas las rutinas que el entrenador te ha asignado, con su nombre, descripción y nivel de dificultad.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">🔎</div>
+          <div class="step-body">
+            <strong>Filtrar ejercicios por grupo muscular</strong>
+            <p>Selecciona un grupo muscular en el desplegable y pulsa <strong>Filtrar</strong>. La tabla de ejercicios se actualiza mostrando solo los de ese grupo.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">🎬</div>
+          <div class="step-body">
+            <strong>Ver GIF del ejercicio</strong>
+            <p>Haz clic en cualquier ejercicio de la tabla. A la derecha aparecerá un GIF animado que muestra cómo ejecutarlo correctamente.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">📊</div>
+          <div class="step-body">
+            <strong>Registrar progreso</strong>
+            <p>Con un ejercicio seleccionado, rellena los campos <em>Peso (kg)</em> y <em>Repeticiones</em> y pulsa <strong>Guardar progreso</strong>. El registro se añade con la fecha actual.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">📈</div>
+          <div class="step-body">
+            <strong>Ver gráfico de evolución</strong>
+            <p>Selecciona un ejercicio y pulsa <strong>Ver evolución</strong>. Se genera un gráfico de líneas mostrando cómo ha evolucionado el peso utilizado a lo largo del tiempo.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="ib-icon">💡</div>
+        <div>
+          <strong>Consejo de progreso</strong>
+          <p>Puedes registrar varios entrenamientos del mismo ejercicio en diferentes días. El gráfico de evolución los mostrará todos ordenados por fecha para que veas tu progresión.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 8. ENTRENADOR -->
+    <section id="entrenador">
+      <div class="section-header">
+        <div class="section-icon si-blue">📋</div>
+        <div>
+          <div class="section-num">Sección 8</div>
+          <h2>Panel Entrenador</h2>
+        </div>
+      </div>
+
+      <p>El entrenador accede a la pestaña <strong>Entrenador</strong>. Desde aquí puede ver los clientes que tiene asignados y gestionar sus rutinas.</p>
+
+      <h3>Ver clientes asignados</h3>
+      <p>En la tabla <em>Clientes Asociados</em> aparecen todos los clientes que tienen a este entrenador asignado. Las columnas son <strong>ID</strong> y <strong>Nombre</strong>.</p>
+
+      <h3>Asignar rutina a un cliente</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Selecciona el cliente en la tabla</strong>
+            <p>Haz clic sobre la fila del cliente al que quieres asignar la rutina.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Elige la rutina en el desplegable</strong>
+            <p>El desplegable <em>Rutina</em> muestra todas las rutinas disponibles en el sistema.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Pulsa "Asignar Rutina"</strong>
+            <p>El sistema comprueba que el cliente no tenga ya esa rutina asignada. Si no la tiene, se guarda y se envía automáticamente un email de notificación al cliente.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box warn">
+        <div class="ib-icon">⚠️</div>
+        <div>
+          <strong>Rutina duplicada</strong>
+          <p>Si intentas asignar una rutina que el cliente ya tiene, el sistema muestra el mensaje <em>"Este cliente ya tiene esa rutina asignada"</em> y no realiza ningún cambio.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 9. EMAIL -->
+    <section id="email">
+      <div class="section-header">
+        <div class="section-icon si-blue">📧</div>
+        <div>
+          <div class="section-num">Sección 9</div>
+          <h2>Notificaciones por email</h2>
+        </div>
+      </div>
+
+      <p>Cuando un entrenador asigna una rutina a un cliente, el sistema envía automáticamente un correo electrónico al email registrado del cliente. El envío se realiza en segundo plano para no bloquear la aplicación.</p>
+
+      <div class="email-preview">
+        <div class="ep-header">
+          <div class="ep-dot" style="background:#ff5c6a"></div>
+          <div class="ep-dot" style="background:#ffbe45; margin-left:4px"></div>
+          <div class="ep-dot" style="background:#00e5a0; margin-left:4px"></div>
+          <span style="margin-left:12px; font-size:12px; color:var(--muted)">Bandeja de entrada</span>
+        </div>
+        <div class="ep-body">
+          <div class="ep-meta">
+            <span>Asunto</span><span><strong>Nueva rutina asignada - Gimnasio</strong></span>
+            <span>De</span><span>hecmartinez555@gmail.com</span>
+            <span>Para</span><span>email del cliente</span>
+          </div>
+          <div class="ep-content">Hola [Nombre del cliente],
+
+Tu entrenador te ha asignado la rutina: [Nombre de la rutina]
+
+Accede a la app para ver los detalles.
+
+Saludos,
+El equipo del Gimnasio</div>
+        </div>
+      </div>
+
+      <div class="info-box info">
+        <div class="ib-icon">ℹ️</div>
+        <div>
+          <strong>Requisito de conexión</strong>
+          <p>El envío de email requiere conexión a Internet. Si no hay conexión, la rutina se asigna igualmente pero el email no se entrega. El error queda registrado en la consola de la aplicación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 10. TEMA -->
+    <section id="tema">
+      <div class="section-header">
+        <div class="section-icon si-yellow">🎨</div>
+        <div>
+          <div class="section-num">Sección 10</div>
+          <h2>Tema Oscuro / Claro</h2>
+        </div>
+      </div>
+
+      <p>La aplicación incluye un botón <strong>"Oscuro / Claro"</strong> en la esquina superior derecha que permite cambiar el tema visual en cualquier momento, incluso con sesión iniciada.</p>
+
+      <div class="theme-demo">
+        <div class="theme-panel">
+          <div class="theme-preview tp-dark">🌙</div>
+          <div>
+            <strong style="font-family:'Syne',sans-serif">Tema Oscuro</strong>
+            <p style="font-size:13px; margin:4px 0 0; color:var(--muted)">Fondo #1e1e1e · Texto blanco. Activo por defecto al arrancar.</p>
+          </div>
+        </div>
+        <div class="theme-panel">
+          <div class="theme-preview tp-light">☀️</div>
+          <div>
+            <strong style="font-family:'Syne',sans-serif">Tema Claro</strong>
+            <p style="font-size:13px; margin:4px 0 0; color:var(--muted)">Fondo blanco · Texto negro. Se activa al pulsar el botón.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box tip">
+        <div class="ib-icon">💡</div>
+        <div>
+          <strong>Cambio en tiempo real</strong>
+          <p>Al pulsar el botón toda la interfaz cambia instantáneamente gracias a <code>SwingUtilities.updateComponentTreeUI(frame)</code>. No hace falta reiniciar la aplicación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ 11. ERRORES -->
+    <section id="errores">
+      <div class="section-header">
+        <div class="section-icon si-red">⚠️</div>
+        <div>
+          <div class="section-num">Sección 11</div>
+          <h2>Errores frecuentes</h2>
+        </div>
+      </div>
+
+      <p>Referencia rápida de los mensajes de error más comunes y cómo resolverlos.</p>
+
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Mensaje</th>
+            <th>Causa</th>
+            <th>Solución</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>"Usuario no existe"</td>
+            <td>El nombre escrito no está en la base de datos</td>
+            <td>Comprueba la ortografía o regístrate</td>
+          </tr>
+          <tr>
+            <td>"Contraseña incorrecta"</td>
+            <td>La contraseña no coincide con el hash guardado</td>
+            <td>Contacta al administrador para restablecerla</td>
+          </tr>
+          <tr>
+            <td>"El usuario no pertenece al rol seleccionado"</td>
+            <td>El rol elegido en el desplegable no es el tuyo</td>
+            <td>Selecciona el rol correcto antes de iniciar sesión</td>
+          </tr>
+          <tr>
+            <td>"Ese usuario ya existe"</td>
+            <td>Ya hay una cuenta con ese nombre de usuario</td>
+            <td>Elige un nombre diferente</td>
+          </tr>
+          <tr>
+            <td>"Este cliente ya tiene esa rutina asignada"</td>
+            <td>La rutina ya estaba en la lista del cliente</td>
+            <td>Selecciona una rutina diferente</td>
+          </tr>
+          <tr>
+            <td>"Peso inválido"</td>
+            <td>El peso es 0, negativo, o mayor de 500</td>
+            <td>Introduce un valor entre 0,1 y 499,9</td>
+          </tr>
+          <tr>
+            <td>"Repeticiones inválidas"</td>
+            <td>Las reps son 0, negativas o ≥ 1000</td>
+            <td>Introduce un número entre 1 y 999</td>
+          </tr>
+          <tr>
+            <td>"Fecha inválida"</td>
+            <td>El formato no es YYYY-MM-DD</td>
+            <td>Usa el formato correcto, p.ej. 2024-03-15</td>
+          </tr>
+          <tr>
+            <td>"GIF no encontrado"</td>
+            <td>El archivo GIF del ejercicio no está en la ruta esperada</td>
+            <td>Contacta al administrador del sistema</td>
+          </tr>
+          <tr>
+            <td>"Búsqueda inválida"</td>
+            <td>El texto de búsqueda contiene caracteres de regex no válidos</td>
+            <td>Evita caracteres especiales como <code>( ) [ ] *</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box error">
+        <div class="ib-icon">🔴</div>
+        <div>
+          <strong>Contraseña perdida</strong>
+          <p>La aplicación usa <strong>BCrypt</strong> para guardar contraseñas de forma segura. No es posible recuperar la contraseña original. Un administrador debe actualizarla desde el panel de gestión.</p>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+
+  <div class="doc-footer">
+    <div>GestiónGimnasio · Manual de usuario · Java Swing + Hibernate</div>
+    <div>Generado para uso interno del gimnasio</div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  });
+
+  // Active nav link
+  const sections = document.querySelectorAll('section[id], div[id="inicio"]');
+  const navLinks = document.querySelectorAll('.nav-item');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-item[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
